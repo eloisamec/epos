@@ -1,0 +1,188 @@
+Index: include/synchronizer.h
+===================================================================
+--- include/synchronizer.h	(revision 3464)
++++ include/synchronizer.h	(working copy)
+@@ -12,7 +12,13 @@
+ {
+ protected:
+     Synchronizer_Common() {}
+-
++	~Synchronizer_Common() 
++	{
++		begin_atomic();
++		wakeup_all();
++		end_atomic();
++	}
++	
+     // Atomic operations
+     bool tsl(volatile bool & lock) { return CPU::tsl(lock); }
+     int finc(volatile int & number) { return CPU::finc(number); }
+@@ -22,9 +28,24 @@
+     void begin_atomic() { Thread::lock(); }
+     void end_atomic() { Thread::unlock(); }
+ 
+-    void sleep() { Thread::yield(); } // implicit unlock()
+-    void wakeup() { end_atomic(); }
+-    void wakeup_all() { end_atomic(); }
++    void sleep() 
++    { 
++		Thread::running()->suspend();
++    } // implicit unlock()
++    void wakeup() 
++    { 
++		if(!Thread::_suspended.empty()) 
++		{
++			Thread::_suspended.head()->object()->resume();
++		}
++    }
++    void wakeup_all()
++    { 
++		while(!Thread::_suspended.empty())
++		{
++			Thread::_suspended.head()->object()->resume();
++		}
++    }
+ };
+ 
+ __END_SYS
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3464)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL philosophers_dinner
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: src/abstraction/semaphore.cc
+===================================================================
+--- src/abstraction/semaphore.cc	(revision 3464)
++++ src/abstraction/semaphore.cc	(working copy)
+@@ -20,9 +20,12 @@
+ {
+     db<Synchronizer>(TRC) << "Semaphore::p(this=" << this << ",value=" << _value << ")" << endl;
+ 
++	begin_atomic();
+     fdec(_value);
+-    while(_value < 0)
++    if(_value < 0)
+         sleep();
++	else
++		end_atomic();
+ }
+ 
+ 
+@@ -30,9 +33,12 @@
+ {
+     db<Synchronizer>(TRC) << "Semaphore::v(this=" << this << ",value=" << _value << ")" << endl;
+ 
++	begin_atomic();
+     finc(_value);
+     if(_value < 1)
+         wakeup();
++	else
++		end_atomic();
+ }
+ 
+ __END_SYS
+Index: src/abstraction/semaphore_test.cc
+===================================================================
+--- src/abstraction/semaphore_test.cc	(revision 3464)
++++ src/abstraction/semaphore_test.cc	(working copy)
+@@ -11,7 +11,7 @@
+ 
+ const int iterations = 10;
+ 
+-Mutex table;
++Semaphore table;
+ 
+ Thread * phil[5];
+ Semaphore * chopstick[5];
+@@ -25,10 +25,10 @@
+ 
+     for(int i = iterations; i > 0; i--) {
+ 
+-        table.lock();
++        table.p();
+         Display::position(l, c);
+         cout << "thinking";
+-        table.unlock();
++        table.v();
+ 
+         Delay thinking(2000000);
+ 
+@@ -35,10 +35,10 @@
+         chopstick[first]->p();   // get first chopstick
+         chopstick[second]->p();   // get second chopstick
+ 
+-        table.lock();
++        table.p();
+         Display::position(l, c);
+         cout << " eating ";
+-        table.unlock();
++        table.v();
+ 
+         Delay eating(1000000);
+ 
+@@ -46,10 +46,10 @@
+         chopstick[second]->v();   // release second chopstick
+     }
+ 
+-    table.lock();
++    table.p();
+     Display::position(l, c);
+     cout << "  done  ";
+-    table.unlock();
++    table.v();
+ 
+     return iterations;
+ }
+@@ -56,7 +56,7 @@
+ 
+ int main()
+ {
+-    table.lock();
++    table.p();
+     Display::clear();
+     Display::position(0, 0);
+     cout << "The Philosopher's Dinner:" << endl;
+@@ -85,14 +85,15 @@
+     Display::position(19, 0);
+ 
+     cout << "The dinner is served ..." << endl;
+-    table.unlock();
++    table.v();
+ 
+     for(int i = 0; i < 5; i++) {
+-        int ret = phil[i]->join();
+-        table.lock();
++	Delay init(1000000);        
++	int ret = phil[i]->join();
++        table.p();
+         Display::position(20 + i, 0);
+         cout << "Philosopher " << i << " ate " << ret << " times " << endl;
+-        table.unlock();
++        table.v();
+     }
+ 
+     for(int i = 0; i < 5; i++)

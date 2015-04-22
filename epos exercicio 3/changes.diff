@@ -1,0 +1,239 @@
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3479)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL philosophers_dinner
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3479)
++++ include/thread.h	(working copy)
+@@ -42,7 +42,8 @@
+     enum {
+         HIGH = 0,
+         NORMAL = 15,
+-        LOW = 31
++        LOW = 31,
++		IDLE = 42
+     };
+ 
+     // Thread Configuration
+Index: src/abstraction/semaphore_test.cc
+===================================================================
+--- src/abstraction/semaphore_test.cc	(revision 3479)
++++ src/abstraction/semaphore_test.cc	(working copy)
+@@ -9,7 +9,7 @@
+ 
+ using namespace EPOS;
+ 
+-const int iterations = 10;
++const int iterations = 5;
+ 
+ Mutex table;
+ 
+Index: src/abstraction/thread.cc
+===================================================================
+--- src/abstraction/thread.cc	(revision 3479)
++++ src/abstraction/thread.cc	(working copy)
+@@ -35,8 +35,11 @@
+         case SUSPENDED: _suspended.insert(&_link); break;
+         default: _ready.insert(&_link);
+     }
+-
+-    unlock();
++	
++	if(preemptive && (_state == READY) && (_link.rank() != IDLE))
++		reschedule();
++	else
++		unlock();
+ }
+ 
+ 
+@@ -50,9 +53,9 @@
+             << ",context={b=" << _context
+             << "," << *_context << "})\n";
+ 
+-    _ready.remove(this);
++	_ready.remove(this);
+     _suspended.remove(this);
+-
++	
+     if(_waiting)
+         _waiting->remove(this);
+ 
+@@ -120,8 +123,8 @@
+     _suspended.insert(&_link);
+ 
+     if(_running == this) {
+-        while(_ready.empty())
+-            idle();
++       // while(_ready.empty())
++       //     idle();
+ 
+         _running = _ready.remove()->object();
+         _running->_state = RUNNING;
+@@ -154,7 +157,7 @@
+ 
+     db<Thread>(TRC) << "Thread::yield(running=" << _running << ")" << endl;
+ 
+-    if(!_ready.empty()) {
++    //if(!_ready.empty()) {
+         Thread * prev = _running;
+         prev->_state = READY;
+         _ready.insert(&prev->_link);
+@@ -163,8 +166,8 @@
+         _running->_state = RUNNING;
+ 
+         dispatch(prev, _running);
+-    } else
+-        idle();
++    //} else
++    //    idle();
+ 
+     unlock();
+ }
+@@ -180,34 +183,34 @@
+     prev->_state = FINISHING;
+     *reinterpret_cast<int *>(prev->_stack) = status;
+ 
+-    if(prev->_joining) {
++	if(prev->_joining) {
+         prev->_joining->resume();
+         prev->_joining = 0;
+     }
+-
++	
+     lock();
+ 
+-    if(_ready.empty()) {
+-        if(!_suspended.empty()) {
+-            while(_ready.empty())
+-                idle(); // implicit unlock();
+-            lock();
+-        } else { // _ready.empty() && _suspended.empty()
+-            db<Thread>(WRN) << "The last thread in the system has exited!\n";
+-            if(reboot) {
+-                db<Thread>(WRN) << "Rebooting the machine ...\n";
+-                Machine::reboot();
+-            } else {
+-                db<Thread>(WRN) << "Halting the CPU ...\n";
+-                CPU::halt();
+-            }
+-        }
+-    } else {
++    //if(_ready.empty()) {
++    //    if(!_suspended.empty()) {
++    //        while(_ready.empty())
++    //            idle(); // implicit unlock();
++    //        lock();
++    //    } else { // _ready.empty() && _suspended.empty()
++    //        db<Thread>(WRN) << "The last thread in the system has exited!\n";
++    //        if(reboot) {
++    //            db<Thread>(WRN) << "Rebooting the machine ...\n";
++    //            Machine::reboot();
++    //        } else {
++    //            db<Thread>(WRN) << "Halting the CPU ...\n";
++    //            CPU::halt();
++    //        }
++    //    }
++    //} else {
+         _running = _ready.remove()->object();
+         _running->_state = RUNNING;
+ 
+         dispatch(prev, _running);
+-    }
++    //}
+ 
+     unlock();
+ }
+@@ -219,8 +222,8 @@
+     // lock() must be called before entering this method
+     assert(locked());
+ 
+-    while(_ready.empty())
+-        idle();
++    //while(_ready.empty())
++    //    idle();
+ 
+     Thread * prev = running();
+     prev->_state = WAITING;
+@@ -298,15 +301,31 @@
+ 
+ int Thread::idle()
+ {
+-    db<Thread>(TRC) << "Thread::idle()" << endl;
+-
+-    db<Thread>(INF) << "There are no runnable threads at the moment!" << endl;
+-    db<Thread>(INF) << "Halting the CPU ..." << endl;
+-
+-    CPU::int_enable();
+-    CPU::halt();
+-
+-    return 0;
++	while(true) {
++		db<Thread>(TRC) << "Thread::idle()" << endl;
++		CPU::int_disable();
++		
++		if(!_suspended.empty()) {
++			db<Thread>(INF) << "There are no runnable threads at the moment!" << endl;
++			CPU::int_enable();
++			db<Thread>(INF) << "Halting the CPU ..." << endl;
++			CPU::halt();
++		} else {
++			db<Thread>(WRN) << "The last thread in the system has exited!\n";
++			if(reboot) {
++                db<Thread>(WRN) << "Rebooting the machine ...\n";
++                Machine::reboot();
++            } else {
++                db<Thread>(WRN) << "Halting the CPU ...\n";
++                CPU::halt();
++				if (_ready.size() > 1) {
++					yield();
++				}
++            }
++		}
++	}
++    
++	return 0;
+ }
+ 
+ __END_SYS
+Index: src/abstraction/thread_init.cc
+===================================================================
+--- src/abstraction/thread_init.cc	(revision 3479)
++++ src/abstraction/thread_init.cc	(working copy)
+@@ -15,8 +15,9 @@
+ 
+     db<Init, Thread>(TRC) << "Thread::init(entry=" << reinterpret_cast<void *>(entry) << ")" << endl;
+ 
+-    _running = new (kmalloc(sizeof(Thread))) Thread(Configuration(RUNNING, NORMAL), entry);
+-
++	_running = new (kmalloc(sizeof(Thread))) Thread(Configuration(RUNNING, NORMAL), entry);
++	new (kmalloc(sizeof(Thread))) Thread(Configuration(READY, IDLE), &idle);
++	
+     if(preemptive)
+         _timer = new (kmalloc(sizeof(Scheduler_Timer))) Scheduler_Timer(QUANTUM, time_slicer);
+ 

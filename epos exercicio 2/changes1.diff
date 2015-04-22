@@ -1,0 +1,268 @@
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3466)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL philosophers_dinner
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3466)
++++ include/thread.h	(working copy)
+@@ -118,7 +118,8 @@
+     volatile State _state;
+     Queue * _waiting;
+     Queue::Element _link;
+-
++	Queue _joining;
++	
+     static Scheduler_Timer * _timer;
+ 
+ private:
+Index: src/abstraction/semaphore_test.cc
+===================================================================
+--- src/abstraction/semaphore_test.cc	(revision 3466)
++++ src/abstraction/semaphore_test.cc	(working copy)
+@@ -11,7 +11,7 @@
+ 
+ const int iterations = 10;
+ 
+-Mutex table;
++Semaphore table;
+ 
+ Thread * phil[5];
+ Semaphore * chopstick[5];
+@@ -18,89 +18,89 @@
+ 
+ OStream cout;
+ 
+-int philosopher(int n, int l, int c)
+-{
+-    int first = (n < 4)? n : 0;
+-    int second = (n < 4)? n + 1 : 4;
++int philosopher(int n, int l, int c) {
++	int first = (n < 4) ? n : 0;
++	int second = (n < 4) ? n + 1 : 4;
+ 
+-    for(int i = iterations; i > 0; i--) {
++	for (int i = iterations; i > 0; i--) {
+ 
+-        table.lock();
+-        Display::position(l, c);
+-        cout << "thinking";
+-        table.unlock();
++		table.p();
++		Display::position(l, c);
++		cout << "thinking";
++		table.v();
+ 
+-        Delay thinking(2000000);
++		Delay thinking(2000000);
+ 
+-        chopstick[first]->p();   // get first chopstick
+-        chopstick[second]->p();   // get second chopstick
++		chopstick[first]->p(); // get first chopstick
++		chopstick[second]->p(); // get second chopstick
+ 
+-        table.lock();
+-        Display::position(l, c);
+-        cout << " eating ";
+-        table.unlock();
++		table.p();
++		Display::position(l, c);
++		cout << " eating ";
++		table.v();
+ 
+-        Delay eating(1000000);
++		Delay eating(1000000);
+ 
+-        chopstick[first]->v();   // release first chopstick
+-        chopstick[second]->v();   // release second chopstick
+-    }
++		chopstick[first]->v(); // release first chopstick
++		chopstick[second]->v(); // release second chopstick
++	}
+ 
+-    table.lock();
+-    Display::position(l, c);
+-    cout << "  done  ";
+-    table.unlock();
++	table.p();
++	Display::position(l, c);
++	cout << "  done  ";
++	table.v();
+ 
+-    return iterations;
++	return iterations;
+ }
+ 
+-int main()
+-{
+-    table.lock();
+-    Display::clear();
+-    Display::position(0, 0);
+-    cout << "The Philosopher's Dinner:" << endl;
++int main() {
++	table.p();
++	Display::clear();
++	Display::position(0, 0);
++	cout << "The Philosopher's Dinner:" << endl;
+ 
+-    for(int i = 0; i < 5; i++)
+-        chopstick[i] = new Semaphore;
++	for (int i = 0; i < 5; i++)
++		chopstick[i] = new Semaphore;
+ 
+-    phil[0] = new Thread(&philosopher, 0,  5, 32);
+-    phil[1] = new Thread(&philosopher, 1, 10, 44);
+-    phil[2] = new Thread(&philosopher, 2, 16, 39);
+-    phil[3] = new Thread(&philosopher, 3, 16, 24);
+-    phil[4] = new Thread(&philosopher, 4, 10, 20);
++	phil[0] = new Thread(&philosopher, 0, 5, 32);
++	phil[1] = new Thread(&philosopher, 1, 10, 44);
++	phil[2] = new Thread(&philosopher, 2, 16, 39);
++	phil[3] = new Thread(&philosopher, 3, 16, 24);
++	phil[4] = new Thread(&philosopher, 4, 10, 20);
+ 
+-    cout << "Philosophers are alive and hungry!" << endl;
++	cout << "Philosophers are alive and hungry!" << endl;
+ 
+-    Display::position(7, 44);
+-    cout << '/';
+-    Display::position(13, 44);
+-    cout << '\\';
+-    Display::position(16, 35);
+-    cout << '|';
+-    Display::position(13, 27);
+-    cout << '/';
+-    Display::position(7, 27);
+-    cout << '\\';
+-    Display::position(19, 0);
++	Display::position(7, 44);
++	cout << '/';
++	Display::position(13, 44);
++	cout << '\\';
++	Display::position(16, 35);
++	cout << '|';
++	Display::position(13, 27);
++	cout << '/';
++	Display::position(7, 27);
++	cout << '\\';
++	Display::position(19, 0);
+ 
+-    cout << "The dinner is served ..." << endl;
+-    table.unlock();
++	cout << "The dinner is served ..." << endl;
++	table.v();
+ 
+-    for(int i = 0; i < 5; i++) {
+-        int ret = phil[i]->join();
+-        table.lock();
+-        Display::position(20 + i, 0);
+-        cout << "Philosopher " << i << " ate " << ret << " times " << endl;
+-        table.unlock();
+-    }
++	for (int i = 0; i < 5; i++) {
++		Delay init(1000000);
++		int ret = phil[i]->join();
+ 
+-    for(int i = 0; i < 5; i++)
+-        delete chopstick[i];
+-    for(int i = 0; i < 5; i++)
+-        delete phil[i];
++		table.p();
++		Display::position(20 + i, 0);
++		cout << "Philosopher " << i << " ate " << ret << " times " << endl;
++		table.v();
++	}
+ 
+-    cout << "The end!" << endl;
++	for (int i = 0; i < 5; i++)
++		delete chopstick[i];
++	for (int i = 0; i < 5; i++)
++		delete phil[i];
+ 
+-    return 0;
++	cout << "The end!" << endl;
++
++	return 0;
+ }
+Index: src/abstraction/thread.cc
+===================================================================
+--- src/abstraction/thread.cc	(revision 3466)
++++ src/abstraction/thread.cc	(working copy)
+@@ -55,6 +55,13 @@
+ 
+     if(_waiting)
+         _waiting->remove(this);
++	
++	while(!_joining.empty()) {
++		Thread * t = _joining.remove()->object();
++		_suspended.remove(&t->_link);
++		t->_state = READY;
++		_ready.insert(&t->_link);
++	}
+ 
+     unlock();
+ 
+@@ -68,11 +75,17 @@
+ 
+     db<Thread>(TRC) << "Thread::join(this=" << this << ",state=" << _state << ")" << endl;
+ 
+-    while(_state != FINISHING)
+-        yield(); // implicit unlock()
+-
+-    unlock();
+-
++	assert(_running != this);
++	assert(!_joining);
++	
++	if(_state != FINISHING) {
++	    //yield(); // implicit unlock() Old code
++		_joining.insert(&_running->_link);
++		_running->suspend();
++	}
++	
++	unlock();
++	
+     return *reinterpret_cast<int *>(_stack);
+ }
+ 
+@@ -169,6 +182,15 @@
+ 
+     lock();
+ 
++	Queue * queue = &_running->_joining;
++	
++	while(!queue->empty()){
++		Thread * t = queue->remove()->object();
++		_suspended.remove(&t->_link);
++		t->_state = READY;
++		_ready.insert(&t->_link);
++	}
++	
+     if(!_ready.empty()) {
+         Thread * prev = _running;
+         prev->_state = FINISHING;
