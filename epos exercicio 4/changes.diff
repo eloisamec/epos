@@ -1,0 +1,295 @@
+Index: include/alarm.h
+===================================================================
+--- include/alarm.h	(revision 3511)
++++ include/alarm.h	(working copy)
+@@ -17,6 +17,9 @@
+ {
+     friend class System;
+ 
++protected:
++	static const bool idle_waiting = Traits<Alarm>::idle_waiting;
++	
+ private:
+     typedef TSC::Hertz Hertz;
+     typedef Timer::Tick Tick;  
+Index: include/condition.h
+===================================================================
+--- include/condition.h	(revision 3511)
++++ include/condition.h	(working copy)
+@@ -4,6 +4,7 @@
+ #define __condition_h
+ 
+ #include <synchronizer.h>
++#include <utility/handler.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -20,6 +21,18 @@
+     void broadcast();
+ };
+ 
++class Condition_Handler: public Handler
++{
++public:
++    Condition_Handler(Condition * h) : _handler(h) {};
++    ~Condition_Handler() {};
++
++    void operator()() { _handler->signal(); }
++	
++private:
++    Condition * _handler;
++};
++
+ // This is an alternative implementation, which does impose ordering
+ // on threads waiting at "wait". Nontheless, it's still susceptible to counter
+ // overflow
+Index: include/mutex.h
+===================================================================
+--- include/mutex.h	(revision 3511)
++++ include/mutex.h	(working copy)
+@@ -4,6 +4,7 @@
+ #define __mutex_h
+ 
+ #include <synchronizer.h>
++#include <utility/handler.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -20,6 +21,18 @@
+     volatile bool _locked;
+ };
+ 
++class Mutex_Handler: public Handler
++{
++public:
++    Mutex_Handler(Mutex * h) : _handler(h) {};
++    ~Mutex_Handler() {};
++
++    void operator()() { _handler->unlock(); }
++	
++private:
++    Mutex * _handler;
++};
++
+ __END_SYS
+ 
+ #endif
+Index: include/semaphore.h
+===================================================================
+--- include/semaphore.h	(revision 3511)
++++ include/semaphore.h	(working copy)
+@@ -4,6 +4,7 @@
+ #define __semaphore_h
+ 
+ #include <synchronizer.h>
++#include <utility/handler.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -20,7 +21,17 @@
+     volatile int _value;
+ };
+ 
++class Semaphore_Handler : public Handler
++{
++public:
++    Semaphore_Handler(Semaphore * h) : _handler(h) {};
++    ~Semaphore_Handler() {};
+ 
++    void operator()() { _handler->v(); }
++	
++private:
++    Semaphore * _handler;
++};
+ __END_SYS
+ 
+ #endif
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3511)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL alarm_test
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/system/traits.h
+===================================================================
+--- include/system/traits.h	(revision 3511)
++++ include/system/traits.h	(working copy)
+@@ -128,6 +128,7 @@
+ template<> struct Traits<Alarm>: public Traits<void>
+ {
+     static const bool visible = hysterically_debugged;
++	static const bool idle_waiting = true;
+ };
+ 
+ template<> struct Traits<Synchronizer>: public Traits<void>
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3511)
++++ include/thread.h	(working copy)
+@@ -7,6 +7,7 @@
+ #include <cpu.h>
+ #include <machine.h>
+ #include <system/kmalloc.h>
++#include <utility/handler.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -152,6 +153,17 @@
+     constructor(entry, conf.stack_size); // implicit unlock
+ }
+ 
++class Thread_Handler : public Handler {
++public:
++    Thread_Handler(Thread * h) : _handler(h) {};
++    ~Thread_Handler() {};
++
++    void operator()() { _handler->resume(); }
++	
++private:
++    Thread * _handler;
++};
++
+ __END_SYS
+ 
+ #endif
+Index: include/utility/handler.h
+===================================================================
+--- include/utility/handler.h	(revision 3511)
++++ include/utility/handler.h	(working copy)
+@@ -7,8 +7,30 @@
+ 
+ __BEGIN_UTIL
+ 
+-typedef void (Handler)();
++class Handler {
+ 
++public:
++	typedef void (Function)();
++	
++	Handler() {}
++    virtual ~Handler() {}
++	
++	virtual void operator()() = 0;
++};
++
++class Function_Handler : public Handler {
++	
++public:
++	Function_Handler(Function * handler) : _handler(handler) {};
++	~Function_Handler() {};
++	
++	void operator()() {
++		_handler();
++	}
++private:
++	Function* _handler;
++};
++
+ __END_UTIL
+ 
+ #endif
+Index: src/abstraction/alarm.cc
+===================================================================
+--- src/abstraction/alarm.cc	(revision 3511)
++++ src/abstraction/alarm.cc	(working copy)
+@@ -48,16 +48,22 @@
+ {
+     db<Alarm>(TRC) << "Alarm::delay(time=" << time << ")" << endl;
+ 
+-	Tick t = _elapsed + ticks(time);
+-
+-	while(_elapsed < t);
++	if(idle_waiting) {
++		Semaphore semaphore(0);
++		Semaphore_Handler handler(&semaphore);
++		Alarm alarm(time, &handler, 1);
++		semaphore.p();
++	} else {
++		Tick t = _elapsed + ticks(time);
++		while(_elapsed < t);
++	}
+ }
+ 
+ 
+ void Alarm::handler(const IC::Interrupt_Id & i)
+ {
+-    static Tick next_tick;
+-    static Handler * next_handler;
++    //static Tick next_tick;
++    //static Handler * next_handler;
+ 
+     lock();
+ 
+@@ -72,20 +78,18 @@
+         display.position(lin, col);
+     }
+ 
+-    if(next_tick)
+-        next_tick--;
+-    if(!next_tick) {
+-        if(next_handler) {
+-            db<Alarm>(TRC) << "Alarm::handler(h=" << reinterpret_cast<void *>(next_handler) << ")" << endl;
+-            (*next_handler)();
+-        }
+-        if(_request.empty())
+-            next_handler = 0;
+-        else {
++	Alarm * alarm = 0;
++    //if(next_tick)
++    //    next_tick--;
++    //if(!next_tick) {
++        if(!_request.empty()){
++			if(_request.head()->promote() <= 0) {
++    //        next_handler = 0;
++        //else {
+             Queue::Element * e = _request.remove();
+-            Alarm * alarm = e->object();
+-            next_tick = alarm->_ticks;
+-            next_handler = alarm->_handler;
++            alarm = e->object();
++    //        next_tick = alarm->_ticks;
++    //        next_handler = alarm->_handler;
+             if(alarm->_times != -1)
+                 alarm->_times--;
+             if(alarm->_times) {
+@@ -92,10 +96,16 @@
+                 e->rank(alarm->_ticks);
+                 _request.insert(e);
+             }
++			}
+         }
+-    }
++    //}
+ 
+     unlock();
++	
++	if(alarm->_handler) {
++		db<Alarm>(TRC) << "Alarm::handler(h=" << reinterpret_cast<void *>(alarm->_handler) << ")" << endl;
++        (*alarm->_handler)();
++	}
+ }
+ 
+ __END_SYS
