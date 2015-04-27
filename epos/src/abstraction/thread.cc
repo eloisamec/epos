@@ -59,14 +59,28 @@ Thread::~Thread()
                     << ",context={b=" << _context
                     << "," << *_context << "})" << endl;
 
-    if(_state != FINISHING)
-        _thread_count--;
-
-    _ready.remove(this);
-    _suspended.remove(this);
-
-    if(_waiting)
-        _waiting->remove(this);
+	assert(_state != RUNNING); // Eu não posso me deletar se estou fazendo algo!
+	
+    switch(_state) {
+		case RUNNING:
+			exit(-1); // Feito só pra funcionar o switch
+			break;
+		case READY: 
+			_ready.remove(this);
+			_thread_count--;
+			break;
+        case SUSPENDED: 
+			_suspended.remove(this); 
+			_thread_count--;
+			break;
+        case WAITING: 
+			_waiting->remove(this);
+			_thread_count--;
+			break;
+        case FINISHING: // Já chamei exit, só saindo do sistema;
+			break;
+			
+	}
 
     if(_joining)
         _joining->resume();

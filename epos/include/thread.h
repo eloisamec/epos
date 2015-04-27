@@ -4,10 +4,10 @@
 #define __thread_h
 
 #include <utility/queue.h>
+#include <utility/handler.h>
 #include <cpu.h>
 #include <machine.h>
 #include <system/kmalloc.h>
-#include <utility/handler.h>
 
 __BEGIN_SYS
 
@@ -153,16 +153,20 @@ inline Thread::Thread(const Configuration & conf, int (* entry)(Tn ...), Tn ... 
     constructor(entry, conf.stack_size); // implicit unlock
 }
 
-class Thread_Handler : public Handler {
+
+// An event handler that triggers a thread (see handler.h)
+class Thread_Handler : public Handler
+{
 public:
-    Thread_Handler(Thread * h) : _handler(h) {};
-    ~Thread_Handler() {};
+    Thread_Handler(Thread * h) : _handler(h) {}
+    ~Thread_Handler() {}
 
     void operator()() { _handler->resume(); }
-	
+
 private:
     Thread * _handler;
 };
+
 
 __END_SYS
 

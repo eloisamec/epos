@@ -17,9 +17,6 @@ class Alarm
 {
     friend class System;
 
-protected:
-	static const bool idle_waiting = Traits<Alarm>::idle_waiting;
-	
 private:
     typedef TSC::Hertz Hertz;
     typedef Timer::Tick Tick;  

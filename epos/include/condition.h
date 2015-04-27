@@ -3,8 +3,8 @@
 #ifndef __condition_h
 #define __condition_h
 
-#include <synchronizer.h>
 #include <utility/handler.h>
+#include <synchronizer.h>
 
 __BEGIN_SYS
 
@@ -19,18 +19,6 @@ public:
     void wait();
     void signal();
     void broadcast();
-};
-
-class Condition_Handler: public Handler
-{
-public:
-    Condition_Handler(Condition * h) : _handler(h) {};
-    ~Condition_Handler() {};
-
-    void operator()() { _handler->signal(); }
-	
-private:
-    Condition * _handler;
 };
 
 // This is an alternative implementation, which does impose ordering
@@ -51,7 +39,7 @@ private:
 //     }
 
 //     void wait() {
-// 	db<Synchronizer>(TRC) << "Condition::wait(this=" << this 
+// 	db<Synchronizer>(TRC) << "Condition::wait(this=" << this
 // 			      << ",wt=" << _wait
 // 			      << ",sg=" << _signal << ")\n";
 // 	int rank = finc(_wait);
@@ -59,14 +47,14 @@ private:
 // 	    sleep();
 //     }
 //     void signal() {
-// 	db<Synchronizer>(TRC) << "Condition::signal(this=" << this 
+// 	db<Synchronizer>(TRC) << "Condition::signal(this=" << this
 // 			      << ",wt=" << _wait
 // 			      << ",sg=" << _signal << ")\n";
 // 	finc(_signal);
 // 	wakeup();
 //     }
 //     void broadcast() { // warning: overflow is not being handled!
-// 	db<Synchronizer>(TRC) << "Condition::broadcast(this=" << this 
+// 	db<Synchronizer>(TRC) << "Condition::broadcast(this=" << this
 // 			      << ",wt=" << _wait
 // 			      << ",sg=" << _signal << ")\n";
 // 	_signal = _wait + 1;
@@ -98,20 +86,20 @@ private:
 //     }
 
 //     void wait() {
-// 	db<Condition>(TRC) << "Condition::wait(this=" << this 
+// 	db<Condition>(TRC) << "Condition::wait(this=" << this
 // 			   << ",ts=" << _time_stamp << ")\n";
 // 	int ts = finc(_time_stamp);
 // 	while(tsl(_not_condition) && (ts > _broadcast))
 // 	    sleep();
 //     }
 //     void signal() {
-// 	db<Condition>(TRC) << "Condition::signal(this=" << this 
+// 	db<Condition>(TRC) << "Condition::signal(this=" << this
 // 			   << ",ts=" << _time_stamp << ")\n";
 // 	_not_condition = false;
 // 	wakeup();
 //     }
 //     void broadcast() {
-// 	db<Condition>(TRC) << "Condition::broadcast(this=" << this 
+// 	db<Condition>(TRC) << "Condition::broadcast(this=" << this
 // 			   << ",ts=" << _time_stamp << ")\n";
 // 	_broadcast = finc(_time_stamp);
 // 	wakeup_all();
@@ -124,6 +112,21 @@ private:
 //     volatile int _broadcast;
 //     volatile int _time_stamp;
 // };
+
+
+// An event handler that triggers a condition variable (see handler.h)
+class Condition_Handler: public Handler
+{
+public:
+    Condition_Handler(Condition * h) : _handler(h) {}
+    ~Condition_Handler() {}
+
+    void operator()() { _handler->signal(); }
+
+private:
+    Condition * _handler;
+};
+
 
 __END_SYS
 
