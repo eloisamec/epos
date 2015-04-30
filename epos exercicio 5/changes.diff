@@ -1,0 +1,105 @@
+Index: include/synchronizer.h
+===================================================================
+--- include/synchronizer.h	(revision 3521)
++++ include/synchronizer.h	(working copy)
+@@ -15,7 +15,10 @@
+ 
+ protected:
+     Synchronizer_Common() {}
+-    ~Synchronizer_Common() { begin_atomic(); wakeup_all(); }
++    ~Synchronizer_Common() { 
++		begin_atomic(); 
++		wakeup_all(); 
++	}
+ 
+     // Atomic operations
+     bool tsl(volatile bool & lock) { return CPU::tsl(lock); }
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3521)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL philosophers_dinner
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: src/abstraction/alarm.cc
+===================================================================
+--- src/abstraction/alarm.cc	(revision 3521)
++++ src/abstraction/alarm.cc	(working copy)
+@@ -33,10 +33,12 @@
+ 
+ Alarm::~Alarm()
+ {
++	assert(!_request.empty());
++	
+     lock();
+ 
+     db<Alarm>(TRC) << "~Alarm(this=" << this << ")" << endl;
+-
++	
+     _request.remove(this);
+ 
+     unlock();
+Index: src/abstraction/thread.cc
+===================================================================
+--- src/abstraction/thread.cc	(revision 3521)
++++ src/abstraction/thread.cc	(working copy)
+@@ -59,15 +59,29 @@
+                     << ",context={b=" << _context
+                     << "," << *_context << "})" << endl;
+ 
+-    if(_state != FINISHING)
+-        _thread_count--;
++	assert(_state != RUNNING); // Eu não posso me deletar se estou fazendo algo!
++	
++    switch(_state) {
++		case RUNNING:
++			exit(-1); // Feito só pra funcionar o switch
++			break;
++		case READY: 
++			_ready.remove(this);
++			_thread_count--;
++			break;
++        case SUSPENDED: 
++			_suspended.remove(this); 
++			_thread_count--;
++			break;
++        case WAITING: 
++			_waiting->remove(this);
++			_thread_count--;
++			break;
++        case FINISHING: // Já chamei exit, só saindo do sistema;
++			break;
++			
++	}
+ 
+-    _ready.remove(this);
+-    _suspended.remove(this);
+-
+-    if(_waiting)
+-        _waiting->remove(this);
+-
+     if(_joining)
+         _joining->resume();
+ 
