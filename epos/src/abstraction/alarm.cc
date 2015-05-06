@@ -33,12 +33,10 @@ Alarm::Alarm(const Microsecond & time, Handler * handler, int times)
 
 Alarm::~Alarm()
 {
-	assert(!_request.empty());
-	
     lock();
 
     db<Alarm>(TRC) << "~Alarm(this=" << this << ")" << endl;
-	
+
     _request.remove(this);
 
     unlock();

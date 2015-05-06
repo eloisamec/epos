@@ -15,10 +15,7 @@ protected:
 
 protected:
     Synchronizer_Common() {}
-    ~Synchronizer_Common() { 
-		begin_atomic(); 
-		wakeup_all(); 
-	}
+    ~Synchronizer_Common() { begin_atomic(); wakeup_all(); }
 
     // Atomic operations
     bool tsl(volatile bool & lock) { return CPU::tsl(lock); }

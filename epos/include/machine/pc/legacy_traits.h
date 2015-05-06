@@ -108,6 +108,13 @@ template<> struct Traits<PC_Display>: public Traits<PC_Common>
     static const unsigned int FRAME_BUFFER_ADDRESS = 0xb8000;
 };
 
+template<> struct Traits<PC_Scratchpad>: public Traits<PC_Common>
+{
+    static const bool enabled = false;
+    static const unsigned int ADDRESS = Traits<PC_Display>::FRAME_BUFFER_ADDRESS;
+    static const unsigned int SIZE = Traits<PC_Display>::LINES * Traits<PC_Display>::COLUMNS;
+};
+
 __END_SYS
 
 #endif
