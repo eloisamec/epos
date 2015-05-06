@@ -1,0 +1,367 @@
+Index: include/application.h
+===================================================================
+--- include/application.h	(revision 3539)
++++ include/application.h	(working copy)
+@@ -18,7 +18,7 @@
+     friend class Init_Application;
+     friend void * ::malloc(size_t);
+     friend void ::free(void *);
+-    friend void ::operator delete(void *);
++	friend void ::operator delete(void *);
+     friend void ::operator delete[](void *);
+ 
+ private:
+@@ -26,7 +26,7 @@
+ 
+ private:
+     static char _preheap[sizeof(Heap)];
+-    static Heap * _heap;
++	static Heap * _heap;
+ };
+ 
+ __END_SYS
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3539)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL segment_test
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/system/types.h
+===================================================================
+--- include/system/types.h	(revision 3539)
++++ include/system/types.h	(working copy)
+@@ -5,9 +5,27 @@
+ #ifndef __types_h
+ #define __types_h
+ 
++__BEGIN_API
++
++enum Type_System {
++    SYSTEM
++};
++
++enum Type_Uncached {
++    UNCACHED
++};
++
++__END_API
++
+ inline void * operator new(size_t s, void * a) { return a; }
+ inline void * operator new[](size_t s, void * a) { return a; }
+ 
++void * operator new(size_t, const _API::Type_System &);
++void * operator new[](size_t, const _API::Type_System &);
++
++void * operator new(size_t, const _API::Type_Uncached &);
++void * operator new[](size_t, const _API::Type_Uncached &);
++
+ // Utilities
+ __BEGIN_UTIL
+ class Dummy;
+Index: include/system.h
+===================================================================
+--- include/system.h	(revision 3539)
++++ include/system.h	(working copy)
+@@ -4,6 +4,7 @@
+ #define __system_h
+ 
+ #include <utility/heap.h>
++#include <segment.h>
+ 
+ extern "C"
+ {
+@@ -17,8 +18,14 @@
+ {
+     friend class Init_System;
+     friend class Init_Application;
+-    friend void * kmalloc(size_t);
+-    friend void kfree(void *);
++    //friend void * kmalloc(size_t);
++    //friend void kfree(void *);
++	friend void * ::malloc(size_t);
++	friend void ::free(void *);
++	friend void * ::operator new(size_t, const EPOS::Type_System &);
++    friend void * ::operator new[](size_t, const EPOS::Type_System &);
++    friend void ::operator delete(void *);
++    friend void ::operator delete[](void *);
+ 
+ public:
+     static System_Info<Machine> * const info() { return _si; }
+@@ -28,10 +35,15 @@
+ 
+ private:
+     static System_Info<Machine> * _si;
+-    static char _preheap[sizeof(Heap)];
++    static char _preheap[(Traits<System>::multiheap ? sizeof(Segment) : 0) + sizeof(Heap)];
++	static Segment * _heap_segment;
+     static Heap * _heap;
+ };
+ 
+ __END_SYS
+ 
++inline void * operator new(size_t bytes, const EPOS::Type_System & a) { return EPOS::System::_heap->alloc(bytes); }
++inline void * operator new[](size_t bytes, const EPOS::Type_System & a) { return EPOS::System::_heap->alloc(bytes); }
++
++
+ #endif
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3539)
++++ include/thread.h	(working copy)
+@@ -7,7 +7,7 @@
+ #include <utility/handler.h>
+ #include <cpu.h>
+ #include <machine.h>
+-#include <system/kmalloc.h>
++//#include <system/kmalloc.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -138,7 +138,7 @@
+ : _state(READY), _waiting(0), _joining(0), _link(this, NORMAL)
+ {
+     lock();
+-    _stack = reinterpret_cast<char *>(kmalloc(STACK_SIZE));
++    _stack = new (SYSTEM) char[STACK_SIZE];
+     _context = CPU::init_stack(_stack, STACK_SIZE, &implicit_exit, entry, an ...);
+     constructor(entry, STACK_SIZE); // implicit unlock
+ }
+@@ -148,12 +148,11 @@
+ : _state(conf.state), _waiting(0), _joining(0), _link(this, conf.priority)
+ {
+     lock();
+-    _stack = reinterpret_cast<char *>(kmalloc(conf.stack_size));
++    _stack = new (SYSTEM) char[conf.stack_size];
+     _context = CPU::init_stack(_stack, conf.stack_size, &implicit_exit, entry, an ...);
+     constructor(entry, conf.stack_size); // implicit unlock
+ }
+ 
+-
+ // An event handler that triggers a thread (see handler.h)
+ class Thread_Handler : public Handler
+ {
+Index: include/utility/heap.h
+===================================================================
+--- include/utility/heap.h	(revision 3539)
++++ include/utility/heap.h	(working copy)
+@@ -12,6 +12,9 @@
+ // Heap
+ class Heap: private Grouping_List<char>
+ {
++protected:
++    static const bool typed_heap = Traits<System>::multiheap;
++
+ public:
+     using Grouping_List<char>::empty;
+     using Grouping_List<char>::size;
+@@ -36,6 +39,9 @@
+             while((bytes % sizeof(void *)))
+                 ++bytes;
+ 
++        if(typed_heap) {
++        	bytes += sizeof(void *);
++        }
+         bytes += sizeof(int);         // add room for size
+         if(bytes < sizeof(Element))
+             bytes = sizeof(Element);
+@@ -48,6 +54,9 @@
+ 
+         int * addr = reinterpret_cast<int *>(e->object() + e->size());
+ 
++        if(typed_heap) {
++        	*addr++ = reinterpret_cast<int>(this);
++        }
+         *addr++ = bytes;
+ 
+         db<Heaps>(TRC) << ") => " << reinterpret_cast<void *>(addr) << endl;
+@@ -71,6 +80,19 @@
+         free(addr, bytes);
+     }
+ 
++    static void os_free(void * ptr) {
++    	int * addr = reinterpret_cast<int *>(ptr);
++		unsigned int bytes = *--addr;
++		Heap * heap = reinterpret_cast<Heap *>(*--addr);
++		heap->free(addr, bytes);
++	}
++
++	static void simple_free(Heap * heap, void * ptr) {
++		int * addr = reinterpret_cast<int *>(ptr);
++		unsigned int bytes = *--addr;
++		heap->free(addr, bytes);
++	}
++
+ private:
+     void out_of_memory();
+ };
+Index: include/utility/malloc.h
+===================================================================
+--- include/utility/malloc.h	(revision 3539)
++++ include/utility/malloc.h	(working copy)
+@@ -4,6 +4,7 @@
+ #define __malloc_h
+ 
+ #include <utility/string.h>
++#include <system.h>
+ #include <application.h>
+ 
+ extern "C"
+@@ -12,7 +13,11 @@
+ 
+     // Standard C Library allocators
+     inline void * malloc(size_t bytes) {
+-	return Application::_heap->alloc(bytes);
++    	if(Traits<System>::multiheap) {
++    		return Application::_heap->alloc(bytes);
++    	} else {
++    		return System::_heap->alloc(bytes);
++    	}
+     }
+ 
+     inline void * calloc(size_t n, unsigned int bytes) {
+@@ -22,7 +27,11 @@
+     }
+ 
+     inline void free(void * ptr) {
+-        Application::_heap->free(ptr);
++    	if(Traits<System>::multiheap) {
++    		Heap::os_free(ptr);
++    	} else {
++    		Heap::simple_free(System::_heap, ptr);
++    	}
+     }
+ }
+ 
+Index: src/abstraction/alarm_init.cc
+===================================================================
+--- src/abstraction/alarm_init.cc	(revision 3539)
++++ src/abstraction/alarm_init.cc	(working copy)
+@@ -1,6 +1,7 @@
+ // EPOS Alarm Abstraction Initialization
+ 
+-#include <system/kmalloc.h>
++//#include <system/kmalloc.h>
++#include <system.h>
+ #include <alarm.h>
+ 
+ __BEGIN_SYS
+@@ -9,7 +10,7 @@
+ {
+     db<Init, Alarm>(TRC) << "Alarm::init()" << endl;
+ 
+-    _timer = new (kmalloc(sizeof(Alarm_Timer))) Alarm_Timer(handler);
++    _timer = new (SYSTEM) Alarm_Timer(handler);
+ }
+ 
+ __END_SYS
+Index: src/abstraction/thread.cc
+===================================================================
+--- src/abstraction/thread.cc	(revision 3539)
++++ src/abstraction/thread.cc	(working copy)
+@@ -1,6 +1,6 @@
+ // EPOS Thread Abstraction Implementation
+ 
+-#include <system/kmalloc.h>
++//#include <system/kmalloc.h>
+ #include <machine.h>
+ #include <thread.h>
+ #include <alarm.h>
+@@ -87,7 +87,7 @@
+ 
+     unlock();
+ 
+-    kfree(_stack);
++    delete(_stack);
+ }
+ 
+ 
+Index: src/abstraction/thread_init.cc
+===================================================================
+--- src/abstraction/thread_init.cc	(revision 3539)
++++ src/abstraction/thread_init.cc	(working copy)
+@@ -1,6 +1,6 @@
+ // EPOS Thread Abstraction Initialization
+ 
+-#include <system/kmalloc.h>
++//#include <system/kmalloc.h>
+ #include <system.h>
+ #include <thread.h>
+ #include <alarm.h>
+@@ -18,12 +18,12 @@
+     // Create the application's main thread
+     // This must precede idle, thus avoiding implicit rescheduling
+     // For preemptive scheduling, reschedule() is called, but it will preserve MAIN as the RUNNING thread
+-    _running = new (kmalloc(sizeof(Thread))) Thread(Configuration(RUNNING, MAIN), entry);
+-    new (kmalloc(sizeof(Thread))) Thread(Configuration(READY, IDLE), &idle);
++    _running = new (SYSTEM) Thread(Configuration(RUNNING, MAIN), entry);
++    new (SYSTEM) Thread(Configuration(READY, IDLE), &idle);
+ 
+ 
+     if(preemptive)
+-        _timer = new (kmalloc(sizeof(Scheduler_Timer))) Scheduler_Timer(QUANTUM, time_slicer);
++        _timer = new (SYSTEM) Scheduler_Timer(QUANTUM, time_slicer);
+ 
+     db<Init, Thread>(INF) << "Dispatching the first thread: " << _running << endl;
+ 
+Index: src/init/init_system.cc
+===================================================================
+--- src/init/init_system.cc	(revision 3539)
++++ src/init/init_system.cc	(working copy)
+@@ -3,6 +3,8 @@
+ #include <utility/random.h>
+ #include <machine.h>
+ #include <system.h>
++#include <address_space.h>
++#include <segment.h>
+ 
+ extern "C" { void __epos_library_app_entry(void); }
+ 
+@@ -21,7 +23,13 @@
+ 
+         // Initialize System's heap
+         db<Init>(INF) << "Initializing system's heap: " << endl;
+-	System::_heap = new (&System::_preheap[0]) Heap(MMU::alloc(MMU::pages(Traits<System>::HEAP_SIZE)), Traits<System>::HEAP_SIZE);
++        if(Traits<System>::multiheap) {
++        	System::_heap_segment = new (&System::_preheap[0]) Segment(Traits<System>::HEAP_SIZE);
++        	System::_heap = new (&System::_preheap[sizeof(Segment)]) Heap(Address_Space(MMU::current()).attach(*System::_heap_segment, Memory_Map<Machine>::SYS_HEAP), System::_heap_segment->size());
++        } else {
++        	System::_heap = new (&System::_preheap[0]) Heap(MMU::alloc(MMU::pages(Traits<System>::HEAP_SIZE)), Traits<System>::HEAP_SIZE);
++        }
++
+         db<Init>(INF) << "done!" << endl;
+ 
+         // Initialize the machine
+Index: src/system/system_scaffold.cc
+===================================================================
+--- src/system/system_scaffold.cc	(revision 3539)
++++ src/system/system_scaffold.cc	(working copy)
+@@ -50,5 +50,6 @@
+ System_Info<Machine> * System::_si = reinterpret_cast<System_Info<Machine> *>(Memory_Map<Machine>::SYS_INFO);
+ char System::_preheap[];
+ Heap * System::_heap;
++Segment * System::_heap_segment;
+ 
+ __END_SYS
