@@ -15,10 +15,9 @@ __BEGIN_SYS
 volatile unsigned int Thread::_thread_count;
 Scheduler_Timer * Thread::_timer;
 
-
-//Thread* volatile Thread::_running;
-//Thread::Queue Thread::_ready;
-//Thread::Queue Thread::_suspended;
+Thread* volatile Thread::_running;
+Thread::Queue Thread::_ready;
+Thread::Queue Thread::_suspended;
 
 // Methods
 void Thread::constructor(const Log_Addr & entry, unsigned int stack_size)

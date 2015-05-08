@@ -126,9 +126,9 @@ protected:
     static Scheduler_Timer * _timer;
 
 private:
- //   static Thread * volatile _running;
- //   static Queue _ready;
- //   static Queue _suspended;
+    static Thread * volatile _running;
+    static Queue _ready;
+    static Queue _suspended;
 };
 
 
