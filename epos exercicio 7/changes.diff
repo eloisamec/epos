@@ -1,0 +1,173 @@
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3547)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE library
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL philosophers_dinner
++#define __mode_library__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/system/traits.h
+===================================================================
+--- include/system/traits.h	(revision 3547)
++++ include/system/traits.h	(working copy)
+@@ -119,7 +119,8 @@
+ {
+     static const bool smp = Traits<System>::multicore;
+ 
+-    static const bool preemptive = true;
++	typedef Scheduling_Criteria::RR Criterion;
++    //static const bool preemptive = true;
+     static const unsigned int QUANTUM = 10000; // us
+ 
+     static const bool trace_idle = hysterically_debugged;
+Index: include/system/types.h
+===================================================================
+--- include/system/types.h	(revision 3547)
++++ include/system/types.h	(working copy)
+@@ -83,6 +83,14 @@
+ 
+ class Thread;
+ 
++template <typename> class Scheduler;
++namespace Scheduling_Criteria
++{
++    class Priority;
++    class FCFS;
++    class RR;
++};
++
+ class Address_Space;
+ class Segment;
+ 
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3547)
++++ include/thread.h	(working copy)
+@@ -7,6 +7,7 @@
+ #include <utility/handler.h>
+ #include <cpu.h>
+ #include <machine.h>
++#include <scheduler.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -13,12 +14,13 @@
+ class Thread
+ {
+     friend class Init_First;
++	friend class Scheduler<Thread>;
+     friend class Synchronizer_Common;
+     friend class Alarm;
+     friend class IA32;
+ 
+ protected:
+-    static const bool preemptive = Traits<Thread>::preemptive;
++    static const bool preemptive = Traits<Thread>::Criterion::preemptive;
+     static const bool reboot = Traits<System>::reboot;
+ 
+     static const unsigned int QUANTUM = Traits<Thread>::QUANTUM;
+@@ -37,28 +39,29 @@
+         FINISHING
+     };
+ 
+-    // Thread Priority
+-    typedef int Priority;
+-    enum {
+-        MAIN   = 0,
+-        HIGH   = 1,
+-        NORMAL = (unsigned(1) << (sizeof(int) * 8 - 1)) - 4,
+-        LOW    = (unsigned(1) << (sizeof(int) * 8 - 1)) - 3,
+-        IDLE   = (unsigned(1) << (sizeof(int) * 8 - 1)) - 2
+-    };
++    typedef Scheduling_Criteria::Priority Priority;
++	typedef Traits<Thread>::Criterion Criterion;
++	enum {
++		HIGH    = Criterion::HIGH,
++		NORMAL  = Criterion::NORMAL,
++		LOW     = Criterion::LOW,
++		MAIN    = Criterion::MAIN,
++		IDLE    = Criterion::IDLE
++	};
+ 
++
+     // Thread Configuration
+     struct Configuration {
+-        Configuration(const State & s = READY, Priority p = NORMAL, unsigned int ss = STACK_SIZE)
+-        : state(s), priority(p), stack_size(ss) {}
++        Configuration(const State & s = READY, const Criterion c = NORMAL, unsigned int ss = STACK_SIZE)
++        : state(s), priority(c), stack_size(ss) {}
+ 
+         State state;
+-        Priority priority;
++        Criterion priority;
+         unsigned int stack_size;
+     };
+ 
+     // Thread Queue
+-    typedef Ordered_Queue<Thread, Priority> Queue;
++    typedef Ordered_Queue<Thread, Criterion, Scheduler<Thread>::Element> Queue;
+ 
+ public:
+     template<typename ... Tn>
+@@ -84,7 +87,7 @@
+ protected:
+     void constructor(const Log_Addr & entry, unsigned int stack_size);
+ 
+-    static Thread * volatile running() { return _running; }
++    static Thread * volatile running() { return _scheduler.chosen(); }
+ 
+     static void lock() { CPU::int_disable(); }
+     static void unlock() { CPU::int_enable(); }
+@@ -124,6 +127,7 @@
+ 
+     static volatile unsigned int _thread_count;
+     static Scheduler_Timer * _timer;
++	static Scheduler<Thread> _scheduler;
+ 
+ private:
+     static Thread * volatile _running;
+Index: src/abstraction/thread_init.cc
+===================================================================
+--- src/abstraction/thread_init.cc	(revision 3547)
++++ src/abstraction/thread_init.cc	(working copy)
+@@ -14,6 +14,8 @@
+ 
+     db<Init, Thread>(TRC) << "Thread::init(entry=" << reinterpret_cast<void *>(entry) << ")" << endl;
+ 
++	if(Criterion::timed)
++        _timer = new (SYSTEM) Scheduler_Timer(QUANTUM, time_slicer);
+     // Create the application's main thread
+     // This must precede idle, thus avoiding implicit rescheduling
+     // For preemptive scheduling, reschedule() is called, but it will preserve MAIN as the RUNNING thread
+@@ -20,10 +22,6 @@
+     _running = new (SYSTEM) Thread(Configuration(RUNNING, MAIN), entry);
+     new (SYSTEM) Thread(Configuration(READY, IDLE), &idle);
+ 
+-
+-    if(preemptive)
+-        _timer = new (SYSTEM) Scheduler_Timer(QUANTUM, time_slicer);
+-
+     db<Init, Thread>(INF) << "Dispatching the first thread: " << _running << endl;
+ 
+     This_Thread::not_booting();
