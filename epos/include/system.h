@@ -21,7 +21,7 @@ class System
     friend void ::operator delete[](void *);
 
 public:
-    static System_Info<Machine> * const info() { return _si; }
+    static System_Info<Machine> * const info() { assert(_si); return _si; }
 
 private:
     static void init();

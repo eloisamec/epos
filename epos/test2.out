@@ -1,0 +1,145 @@
+make --print-directory run1
+make[1]: Entering directory `/home/maria.eloisa/epos'
+(cd etc && make --print-directory)
+make[2]: Entering directory `/home/maria.eloisa/epos/etc'
+sed -e 's/^#define MODE.*$/#define MODE builtin/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define ARCH.*$/#define ARCH ia32/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define MACH.*$/#define MACH pc/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define MMOD.*$/#define MMOD legacy/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define APPL.*$/#define APPL segment_test/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define __mode_.*__$/#define __mode_builtin__/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define __arch_.*__$/#define __arch_ia32__/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define __mach_.*__$/#define __mach_pc__/' -i /home/maria.eloisa/epos/include/system/config.h
+sed -e 's/^#define __mmod_.*__$/#define __mmod_legacy__/' -i /home/maria.eloisa/epos/include/system/config.h
+make[2]: Leaving directory `/home/maria.eloisa/epos/etc'
+(cd tools && make --print-directory)
+make[2]: Entering directory `/home/maria.eloisa/epos/tools'
+(cd eposcc && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/tools/eposcc'
+install -m 775 eposcc /home/maria.eloisa/epos/bin
+sed -e 's/^EPOS=.*$/EPOS=\/home\/maria.eloisa\/epos/' -i /home/maria.eloisa/epos/bin/eposcc
+make[3]: Leaving directory `/home/maria.eloisa/epos/tools/eposcc'
+(cd eposmkbi && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/tools/eposmkbi'
+install -m 775 eposmkbi /home/maria.eloisa/epos/bin
+make[3]: Leaving directory `/home/maria.eloisa/epos/tools/eposmkbi'
+make[2]: Leaving directory `/home/maria.eloisa/epos/tools'
+(cd src && make --print-directory)
+make[2]: Entering directory `/home/maria.eloisa/epos/src'
+(cd utility && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/utility'
+make[3]: Nothing to be done for `all'.
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/utility'
+(cd architecture && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/architecture'
+(cd ia32 && make --print-directory)
+make[4]: Entering directory `/home/maria.eloisa/epos/src/architecture/ia32'
+install ia32_crt0.o ia32_crtbegin.o ia32_crtend.o /home/maria.eloisa/epos/lib
+make[4]: Leaving directory `/home/maria.eloisa/epos/src/architecture/ia32'
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/architecture'
+(cd machine && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/machine'
+(cd common && make --print-directory)
+make[4]: Entering directory `/home/maria.eloisa/epos/src/machine/common'
+make[4]: Nothing to be done for `all'.
+make[4]: Leaving directory `/home/maria.eloisa/epos/src/machine/common'
+(cd pc && make --print-directory)
+make[4]: Entering directory `/home/maria.eloisa/epos/src/machine/pc'
+make[4]: Nothing to be done for `all'.
+make[4]: Leaving directory `/home/maria.eloisa/epos/src/machine/pc'
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/machine'
+(cd abstraction && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/abstraction'
+make[3]: Nothing to be done for `all'.
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/abstraction'
+(cd setup && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/setup'
+install pc_setup /home/maria.eloisa/epos/img
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/setup'
+(cd boot && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/boot'
+dd if=pc_boot of=pc_boot.tmp ibs=32 skip=1 obs=512 >& /dev/null
+install pc_boot.tmp /home/maria.eloisa/epos/img/pc_boot
+rm -f pc_boot.tmp
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/boot'
+(cd system && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/system'
+/usr/local/ia32/gcc-4.4.4/bin/ia32-ld  -nostdlib -L/home/maria.eloisa/epos/lib -Bstatic -L`/usr/local/ia32/gcc-4.4.4/bin/ia32-gcc -ansi -c  -Wa,--32 -print-file-name=` --nmagic \
+		--section-start .init=0xff700000 \
+		--section-start .ctors=0xff740000 \
+		--entry=_init -o pc_system \
+		/home/maria.eloisa/epos/lib/ia32_crtbegin.o \
+		system_scaffold.o \
+		/home/maria.eloisa/epos/lib/ia32_crtend.o \
+		--whole-archive \
+		-lsys_ia32 -lmach_ia32 -larch_ia32 \
+		--no-whole-archive \
+		-lutil_ia32 -lgcc
+install application_scaffold.o pc_application.o
+/usr/local/ia32/gcc-4.4.4/bin/ia32-objcopy -L _end pc_system
+install pc_system /home/maria.eloisa/epos/img
+install pc_application.o /home/maria.eloisa/epos/lib
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/system'
+(cd init && make --print-directory)
+make[3]: Entering directory `/home/maria.eloisa/epos/src/init'
+/usr/local/ia32/gcc-4.4.4/bin/ia32-ld  -nostdlib -L/home/maria.eloisa/epos/lib -Bstatic -L`/usr/local/ia32/gcc-4.4.4/bin/ia32-gcc -ansi -c  -Wa,--32 -print-file-name=` --omagic \
+		--section-start .init=0x00200000 \
+		--entry=_init -o pc_init \
+		/home/maria.eloisa/epos/lib/ia32_crtbegin.o \
+		init_first.o init_system.o \
+		/home/maria.eloisa/epos/lib/ia32_crtend.o \
+		-linit_ia32 \
+		-R /home/maria.eloisa/epos/src/system/pc_system \
+		-lutil_ia32 -lgcc
+install init_application.o pc_init_application.o
+install pc_init /home/maria.eloisa/epos/img
+install pc_init_application.o /home/maria.eloisa/epos/lib
+make[3]: Leaving directory `/home/maria.eloisa/epos/src/init'
+make[2]: Leaving directory `/home/maria.eloisa/epos/src'
+(cd app && make --print-directory)
+make[2]: Entering directory `/home/maria.eloisa/epos/app'
+/home/maria.eloisa/epos/bin/eposcc --builtin  --gc-sections  -o segment_test segment_test.o
+install segment_test /home/maria.eloisa/epos/img
+make[2]: Leaving directory `/home/maria.eloisa/epos/app'
+(cd img && make --print-directory)
+make[2]: Entering directory `/home/maria.eloisa/epos/img'
+/home/maria.eloisa/epos/bin/eposmkbi /home/maria.eloisa/epos segment_test.img segment_test
+
+EPOS bootable image tool
+
+  EPOS mode: builtin
+  Machine: pc
+  Model: legacy
+  Processor: ia32 (32 bits, little-endian)
+  Memory: 262144 KBytes
+  Boot Length: 128 - 512 (min - max) KBytes
+  Node id: will get from the network
+
+  Creating EPOS bootable image in "segment_test.img":
+    Adding boot strap "/home/maria.eloisa/epos/img/pc_boot": done.
+    Adding setup "/home/maria.eloisa/epos/img/pc_setup": done.
+    Adding init "/home/maria.eloisa/epos/img/pc_init": done.
+    Adding system "/home/maria.eloisa/epos/img/pc_system": done.
+    Adding application "segment_test": done.
+    Adding system info: done.
+
+  Adding specific boot features of "pc": done.
+
+  Image successfully generated (70768 bytes)!
+
+make[2]: Leaving directory `/home/maria.eloisa/epos/img'
+(cd img && make --print-directory run)
+make[2]: Entering directory `/home/maria.eloisa/epos/img'
+qemu-system-i386 -smp 1 -m 262144k -nographic -no-reboot -fda  segment_test.img | tee segment_test.out
+Setting up this machine as follows: 
+  Processor:    IA32 at 2205 MHz (BUS clock = 125 MHz)
+  Memory:       262144 Kbytes [0x00000000:0x10000000]
+  User memory:  261752 Kbytes [0x00000000:0x0ff9e000]
+  PCI aperture: 45064 Kbytes [0xfc000000:0xfec02000]
+  Node Id:      will get from the network!
+  Setup:        18944 bytes
+  Init:         5104 bytes
+  OS code:      41424 bytes	data: 608 bytes	stack: 16384 bytes
+  APP code:     2176 bytes	data: 16797696 bytes
+[024;073HPANIC!make[2]: Leaving directory `/home/maria.eloisa/epos/img'
+make[1]: Leaving directory `/home/maria.eloisa/epos'

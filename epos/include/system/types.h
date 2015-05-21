@@ -83,6 +83,22 @@ class Application;
 
 class Thread;
 
+template<typename> class Scheduler;
+namespace Scheduling_Criteria
+{
+    class Priority;
+    class FCFS;
+    class RR;
+    class RM;
+    class DM;
+    class EDF;
+    class CPU_Affinity;
+    class GEDF;
+    class PEDF;
+    class CEDF;
+};
+
+
 class Address_Space;
 class Segment;
 

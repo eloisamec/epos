@@ -11,13 +11,13 @@ struct Traits
 {
     static const bool enabled = true;
     static const bool debugged = true;
-    static const bool hysterically_debugged = true;
+    static const bool hysterically_debugged = false;
 };
 
 template<> struct Traits<Build>
 {
     enum {LIBRARY, BUILTIN};
-    static const unsigned int MODE = BUILTIN;
+    static const unsigned int MODE = LIBRARY;
 
     enum {IA32};
     static const unsigned int ARCHITECTURE = IA32;
@@ -38,8 +38,8 @@ template<> struct Traits<Debug>
 {
     static const bool error   = true;
     static const bool warning = true;
-    static const bool info    = true;
-    static const bool trace   = true;
+    static const bool info    = false;
+    static const bool trace   = false;
 };
 
 template<> struct Traits<Lists>: public Traits<void>

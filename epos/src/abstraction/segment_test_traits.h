@@ -11,13 +11,13 @@ struct Traits
 {
     static const bool enabled = true;
     static const bool debugged = true;
-    static const bool hysterically_debugged = false;
+    static const bool hysterically_debugged = true;
 };
 
 template<> struct Traits<Build>
 {
-    enum {LIBRARY};
-    static const unsigned int MODE = LIBRARY;
+    enum {LIBRARY, BUILTIN};
+    static const unsigned int MODE = BUILTIN;
 
     enum {IA32};
     static const unsigned int ARCHITECTURE = IA32;
@@ -38,8 +38,8 @@ template<> struct Traits<Debug>
 {
     static const bool error   = true;
     static const bool warning = true;
-    static const bool info    = false;
-    static const bool trace   = false;
+    static const bool info    = true;
+    static const bool trace   = true;
 };
 
 template<> struct Traits<Lists>: public Traits<void>
@@ -119,11 +119,17 @@ template<> struct Traits<Thread>: public Traits<void>
 {
     static const bool smp = Traits<System>::multicore;
 
-    static const bool preemptive = true;
+    typedef Scheduling_Criteria::RR Criterion;
     static const unsigned int QUANTUM = 10000; // us
 
     static const bool trace_idle = hysterically_debugged;
 };
+
+template<> struct Traits<Scheduler<Thread> >: public Traits<void>
+{
+    static const bool debugged = Traits<Thread>::trace_idle || hysterically_debugged;
+};
+
 
 template<> struct Traits<Address_Space>: public Traits<void>
 {
