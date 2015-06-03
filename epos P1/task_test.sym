@@ -1,0 +1,196 @@
+00000000 T _init
+00000040 T _start
+00000048 T __epos_app_entry
+00000060 t T.264
+000000a0 t global constructors keyed to _end
+00000350 t global constructors keyed to EPOS::S::Application::_preheap
+00000380 t global constructors keyed to a
+000003a0 T func_b()
+000003f0 T func_a()
+00000440 T main
+000010d0 T _fini
+00400000 d __CTOR_LIST__
+00400010 d __CTOR_END__
+00400014 d __DTOR_LIST__
+00400018 d __DTOR_END__
+0040001c A __bss_start
+0040001c A _edata
+0040001c b initialized.877
+00400021 B EPOS::S::Application::_preheap
+00400034 B EPOS::S::Application::_heap
+00400038 B EPOS::cout
+00400040 B EPOS::cerr
+00400048 B a
+0040004c B b
+00400050 B m
+00400054 B cout
+0040005c A _end
+ff700040 A _print
+ff7001b0 A __cxa_pure_virtual
+ff700280 A _exit
+ff700290 A _panic
+ff7002a0 A EPOS::S::Address_Space::physical(EPOS::S::CPU_Common::Log_Addr)
+ff7002f0 A EPOS::S::Address_Space::Address_Space()
+ff7005f0 A EPOS::S::Address_Space::Address_Space(EPOS::S::IA32_MMU::Page_Table*)
+ff7006c0 A EPOS::S::Address_Space::Address_Space(EPOS::S::IA32_MMU::Page_Table*)
+ff700790 A EPOS::S::Address_Space::attach(EPOS::S::Segment const&)
+ff7008e0 A EPOS::S::Address_Space::attach(EPOS::S::Segment const&, EPOS::S::CPU_Common::Log_Addr)
+ff700a40 A EPOS::S::Address_Space::detach(EPOS::S::Segment const&)
+ff700b50 A EPOS::S::Address_Space::~Address_Space()
+ff700e50 A EPOS::S::Address_Space::~Address_Space()
+ff701150 A EPOS::S::Address_Space::Address_Space()
+ff701450 W EPOS::S::U::Handler::~Handler()
+ff701460 W EPOS::S::Semaphore_Handler::~Semaphore_Handler()
+ff7014a0 W EPOS::S::Semaphore_Handler::operator()()
+ff7014c0 W EPOS::S::Semaphore_Handler::~Semaphore_Handler()
+ff7014e0 W EPOS::S::U::Handler::~Handler()
+ff701500 A EPOS::S::Alarm::~Alarm()
+ff701660 A EPOS::S::Alarm::~Alarm()
+ff7017c0 A EPOS::S::Alarm::handler(unsigned int const&)
+ff701a50 A EPOS::S::Alarm::Alarm(unsigned long const&, EPOS::S::U::Handler*, int)
+ff701d30 A EPOS::S::Alarm::Alarm(unsigned long const&, EPOS::S::U::Handler*, int)
+ff702010 A EPOS::S::Alarm::delay(unsigned long const&)
+ff7020f0 A EPOS::S::Condition::signal()
+ff702170 A EPOS::S::Condition::wait()
+ff7021f0 A EPOS::S::Condition::Condition()
+ff702270 A EPOS::S::Condition::Condition()
+ff7022f0 A EPOS::S::Condition::broadcast()
+ff702370 A EPOS::S::Condition::~Condition()
+ff7023f0 A EPOS::S::Condition::~Condition()
+ff702470 A EPOS::S::Mutex::~Mutex()
+ff7024f0 A EPOS::S::Mutex::~Mutex()
+ff702570 A EPOS::S::Mutex::Mutex()
+ff7025f0 A EPOS::S::Mutex::Mutex()
+ff702670 A EPOS::S::Mutex::unlock()
+ff7026f0 A EPOS::S::Mutex::lock()
+ff702780 A EPOS::S::Segment::size() const
+ff702790 A EPOS::S::Segment::phy_address() const
+ff7027d0 A EPOS::S::Segment::Segment(EPOS::S::CPU_Common::Log_Addr, unsigned int, EPOS::S::MMU_Common<10u, 10u, 12u>::Flags)
+ff702c00 A EPOS::S::Segment::Segment(unsigned int, EPOS::S::MMU_Common<10u, 10u, 12u>::Flags)
+ff703740 A EPOS::S::Segment::~Segment()
+ff703f20 A EPOS::S::Segment::Segment(EPOS::S::CPU_Common::Log_Addr, unsigned int, EPOS::S::MMU_Common<10u, 10u, 12u>::Flags)
+ff704350 A EPOS::S::Segment::Segment(unsigned int, EPOS::S::MMU_Common<10u, 10u, 12u>::Flags)
+ff704e90 A EPOS::S::Segment::resize(int)
+ff705920 A EPOS::S::Segment::~Segment()
+ff706100 A EPOS::S::Semaphore::~Semaphore()
+ff706180 A EPOS::S::Semaphore::Semaphore(int)
+ff706230 A EPOS::S::Semaphore::~Semaphore()
+ff7062b0 A EPOS::S::Semaphore::Semaphore(int)
+ff706360 A EPOS::S::Semaphore::v()
+ff706430 A EPOS::S::Semaphore::p()
+ff706500 A EPOS::S::Task::Task()
+ff706510 A EPOS::S::Task::Task()
+ff706520 A EPOS::S::Task::self()
+ff706530 A EPOS::S::Task::remove(EPOS::S::Thread*)
+ff7065f0 A EPOS::S::Task::address_space() const
+ff706600 A EPOS::S::Task::code_segment() const
+ff706610 A EPOS::S::Task::data_segment() const
+ff706620 A EPOS::S::Task::code() const
+ff706640 A EPOS::S::Task::data() const
+ff706690 A EPOS::S::Task::~Task()
+ff706770 A EPOS::S::Task::~Task()
+ff706850 A EPOS::S::Task::Task(EPOS::S::Segment const&, EPOS::S::Segment const&)
+ff7069c0 A EPOS::S::Task::insert(EPOS::S::Thread*)
+ff706b00 A EPOS::S::Task::Task(EPOS::S::Segment const&, EPOS::S::Segment const&)
+ff706c70 A EPOS::S::U::This_Thread::id()
+ff706c90 W EPOS::S::U::Ordered_List<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR, EPOS::S::U::List_Elements::Doubly_Linked_Scheduling<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR>, false>::insert(EPOS::S::U::List_Elements::Doubly_Linked_Scheduling<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR>*)
+ff706de0 A EPOS::S::Thread::idle()
+ff706e50 W EPOS::S::operator<<(EPOS::S::U::Debug&, EPOS::S::IA32::Context const&)
+ff7072a0 A EPOS::S::Thread::dispatch(EPOS::S::Thread*, EPOS::S::Thread*, bool)
+ff7073a0 A EPOS::S::Thread::yield()
+ff7075f0 A EPOS::S::Thread::suspend(bool)
+ff7077d0 A EPOS::S::Thread::join()
+ff7078a0 A EPOS::S::Thread::pass()
+ff707bc0 A EPOS::S::Thread::sleep(EPOS::S::U::Ordered_Queue<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR, EPOS::S::U::List_Elements::Doubly_Linked_Scheduling<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR> >*)
+ff707ed0 A EPOS::S::Thread::reschedule()
+ff708070 A EPOS::S::Thread::time_slicer(unsigned int const&)
+ff708080 A EPOS::S::Thread::resume()
+ff708280 A EPOS::S::Thread::wakeup_all(EPOS::S::U::Ordered_Queue<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR, EPOS::S::U::List_Elements::Doubly_Linked_Scheduling<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR> >*)
+ff7084e0 A EPOS::S::Thread::priority(EPOS::S::Scheduling_Criteria::Priority const&)
+ff708890 A EPOS::S::Thread::constructor(EPOS::S::CPU_Common::Log_Addr const&, unsigned int)
+ff708d90 A EPOS::S::Thread::wakeup(EPOS::S::U::Ordered_Queue<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR, EPOS::S::U::List_Elements::Doubly_Linked_Scheduling<EPOS::S::Thread, EPOS::S::Scheduling_Criteria::RR> >*)
+ff709020 A EPOS::S::Thread::exit(int)
+ff7095a0 A EPOS::S::Thread::implicit_exit()
+ff7095c0 A EPOS::S::Thread::~Thread()
+ff709a30 A EPOS::S::Thread::~Thread()
+ff709ea0 A EPOS::S::RTC_Common::Date::Date(unsigned long const&, unsigned long)
+ff70a040 A EPOS::S::RTC_Common::Date::Date(unsigned long const&, unsigned long)
+ff70a1e0 A EPOS::S::RTC_Common::Date::to_offset(unsigned long) const
+ff70a2a0 A EPOS::S::PC_IC::int_not(unsigned int const&)
+ff70a2b0 A EPOS::S::APIC::ipi_init(int volatile*)
+ff70a310 A EPOS::S::APIC::ipi_start(EPOS::S::CPU_Common::Log_Addr, int volatile*)
+ff70a360 A EPOS::S::APIC::ipi_send(unsigned int, unsigned int)
+ff70a3c0 A EPOS::S::PC_IC::exc_fpu(unsigned int const&, unsigned long, unsigned long, unsigned long, unsigned long)
+ff70a3e0 A EPOS::S::PC_IC::exc_gpf(unsigned int const&, unsigned long, unsigned long, unsigned long, unsigned long)
+ff70a400 A EPOS::S::PC_IC::exc_pf(unsigned int const&, unsigned long, unsigned long, unsigned long, unsigned long)
+ff70a420 A EPOS::S::PC_IC::exc_not(unsigned int const&, unsigned long, unsigned long, unsigned long, unsigned long)
+ff70a440 W EPOS::S::PC_IC::dispatch(unsigned int)
+ff70a4f0 A EPOS::S::PC_IC::entry()
+ff70a820 A EPOS::S::operator<<(EPOS::S::U::Debug&, EPOS::S::System_Info<EPOS::S::PC> const&)
+ff70ba30 A EPOS::S::PC::reboot()
+ff70bb10 A EPOS::S::PC::panic()
+ff70bdc0 A EPOS::S::PC_PCI::header(EPOS::S::PCI_Common::Locator const&, EPOS::S::PCI_Common::Header*)
+ff70c1f0 A EPOS::S::PC_PCI::scan(unsigned short const&, int)
+ff70c310 A EPOS::S::PC_PCI::scan(unsigned short const&, unsigned short const&, int)
+ff70c480 A EPOS::S::PC_RTC::date(EPOS::S::RTC_Common::Date const&)
+ff70c730 A EPOS::S::PC_RTC::date()
+ff70cb10 A EPOS::S::PC_Timer::int_handler(unsigned int const&)
+ff70cba0 A EPOS::S::IA32::Context::save() volatile
+ff70cbc0 A EPOS::S::IA32::Context::load() const volatile
+ff70cbd0 A EPOS::S::IA32::switch_context(EPOS::S::IA32::Context* volatile*, EPOS::S::IA32::Context*)
+ff70cc20 A EPOS::S::U::Heap::out_of_memory()
+ff70cc30 A operator delete[](void*)
+ff70cde0 A operator delete(void*)
+ff70cf90 A EPOS::S::U::OStream::utoa(unsigned int, char*, unsigned int)
+ff70d070 A EPOS::S::U::OStream::itoa(int, char*)
+ff70d0b0 A EPOS::S::U::OStream::llutoa(unsigned long long, char*, unsigned int)
+ff70d200 A EPOS::S::U::OStream::llitoa(long long, char*)
+ff70d250 A EPOS::S::U::OStream::ptoa(void const*, char*)
+ff70d2a0 W memcmp
+ff70d340 W memcpy
+ff70d440 W memchr
+ff70d500 W memset
+ff70d5f0 W strcmp
+ff70d660 W strncmp
+ff70d700 W strcpy
+ff70d760 W strncpy
+ff70d800 W strchr
+ff70d900 W strlen
+ff70d960 W strcat
+ff70d990 W strrchr
+ff70d9c0 W atol
+ff70da20 W itoa
+ff70daf0 W utoa
+ff70db70 A atoi
+ff70db9c A __udivdi3
+ff70dca4 A __umoddi3
+ff7400c4 A EPOS::S::__entry
+ff7400c8 A EPOS::S::kout
+ff7400d0 A EPOS::S::kerr
+ff7400e0 A EPOS::S::System::_preheap
+ff740104 A EPOS::S::System::_heap_segment
+ff740108 A EPOS::S::System::_heap
+ff74010c A EPOS::S::Alarm::_timer
+ff740110 A EPOS::S::Alarm::_elapsed
+ff740114 A EPOS::S::Alarm::_request
+ff740120 A EPOS::S::Task::_master
+ff740124 A EPOS::S::Task::_threads
+ff740130 A EPOS::S::U::This_Thread::_not_booting
+ff740134 A EPOS::S::Thread::_thread_count
+ff740138 A EPOS::S::Thread::_timer
+ff74013c A EPOS::S::Thread::_scheduler
+ff74014c A EPOS::S::Scratchpad_Common::_segment
+ff740150 A EPOS::S::Scratchpad_Common::_heap
+ff740154 A EPOS::S::Serial_Display::_uart
+ff740158 A EPOS::S::Serial_Display::_line
+ff74015c A EPOS::S::Serial_Display::_column
+ff740160 A EPOS::S::PC_Display::_frame_buffer
+ff740164 A EPOS::S::APIC::_base
+ff740180 A EPOS::S::PC_IC::_int_vector
+ff74024c A EPOS::S::PC::_n_cpus
+ff740250 A EPOS::S::PC_PCI::_phy_io_mem
+ff740254 A EPOS::S::PC_Timer::_channels
+ff740260 A EPOS::S::IA32::_cpu_clock
+ff740264 A EPOS::S::IA32::_bus_clock
+ff740268 A EPOS::S::IA32_MMU::_free
+ff740278 A EPOS::S::IA32_MMU::_master

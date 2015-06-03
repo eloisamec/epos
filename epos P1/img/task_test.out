@@ -1,0 +1,198 @@
+PC_Setup(bi=0x00107000,sp=0x00106efc)
+PC_Setup::detect_memory()
+PC_Setup::calibrate_timers()
+PC_Setup::detect_pci()
+Setting up this machine as follows: 
+  Processor:    IA32 at 2203 MHz (BUS clock = 125 MHz)
+  Memory:       262144 Kbytes [0x00000000:0x10000000]
+  User memory:  261736 Kbytes [0x00000000:0x0ff9a000]
+  PCI aperture: 45064 Kbytes [0xfc000000:0xfec02000]
+  Node Id:      will get from the network!
+  Setup:        22528 bytes
+  Init:         7696 bytes
+  OS code:      59248 bytes	data: 640 bytes	stack: 16384 bytes
+  APP code:     4832 bytes	data: 16797696 bytes
+setup_idt(idt=0x0ffff000)
+setup_gdt(gdt=0x0fffe000)
+setup_sys_pt(pmm={idt=0x0ffff000,gdt=0x0fffe000,pt=0x0fffd000,pd=0x0fffc000,info
+=0x0fffb000,tss0=0x0fffa000,mem=0x0ffba000,io=0x0ffae000,sysc=0x0ff9f000,sysd=0x
+0ff9e000,syss=0x0ff9a000,memb=0x00000000,memt=0x0ff9a000,fr1b=0x00002000,fr1t=0x
+000a0000,fr2b=0x00100000,fr2t=0x00400000},code_size=15,data_size=1,stack_size=4)
+
+setup_sys_pd(pmm={idt=0x0ffff000,...},mem_base=0x00000000,mem_top=0x0ff9a000,io_
+base=0xfc000000,io_top=0xfec02000)
+setup_tss0(tss0=0xff405000)
+PC_Setup::load_init()
+PC_Setup::load_os()
+PC_Setup::load_app()
+Executing system's global constructors ...
+PC_Setup::call_next(ip=0x00200000,sp=0xff7c3ff8) => INIT
+Init_System()
+CPU::init()
+IA32_MMU::free(frame=0x00002000,n=158)
+IA32_MMU::free(frame=0x00100000,n=768)
+IA32_MMU::free(frame=0x01405000,n=60309)
+IA32_MMU::alloc(frames=1) => 0x0009f000
+IA32_MMU::alloc(frames=68) => 0x0005b000
+Segment(bytes=278528,flags=0x00000007) [Chunk::_pt=0x0009f000] => 0xff7400e0
+Address_Space(pd=0x0fffc000) [Directory::pd=0x0fffc000] => 0xff7c3fb4
+Address_Space::attach(seg=0xff7400e0,addr=0xff800000) => 0xff800000
+Heap(addr=0xff800000,bytes=278528) => 0xff7400f4
+~Address_Space(this=0xff7c3fb4) [Directory::pd=0x0fffc000]
+PC::init()
+IC::init()
+PCI::init(pmm.io_mem=0xfc000000)
+Timer::init()
+Address_Space(pd=0x0fffc000) [Directory::pd=0x0fffc000] => 0xff843fdc
+IA32_MMU::alloc(frames=1) => 0x0005a000
+Segment(bytes=4832,phy_addr=0x00000000,flags=0x00000007) [Chunk::_pt=0x0005a000]
+ => 0xff843fc0
+IA32_MMU::alloc(frames=5) => 0x00055000
+Segment(bytes=16797696,phy_addr=0x00400000,flags=0x00000007) [Chunk::_pt=0x00055
+000] => 0xff843fa4
+Alarm::init()
+Init_First()
+Thread::init(entry=0x00000040)
+Task::insert(Thread * t): 0 == 0
+Task::insert(Thread * t): 1 == 1
+Thread(entry=0x00000040,state=0,priority=0,stack={b=0xff83ff34,s=16384},context=
+{b=0xff843f04,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,e
+sp=0x00000000,eip=0x00000040,cs=8,ds=10,es=10,fs=10,gs=10,ss=10,cr3=0x0fffc000}}
+) => 0xff843f3c
+Task::insert(Thread * t): 1 == 0
+Task::insert(Thread * t): 2 == 1
+Thread(entry=0xff706de0,state=1,priority=2147483647,stack={b=0xff83bef4,s=16384}
+,context={b=0xff83fec4,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x0
+0000000,esp=0x00000000,eip=0xff706de0,cs=8,ds=10,es=10,fs=10,gs=10,ss=10,cr3=0x0
+fffc000}}) => 0xff83fefc
+Init_Application()
+Heap(addr=0x00405000,bytes=16777216) => 0x00400021
+Task test
+I'll try to clone myself:
+My address space's page directory is located at 0x0fffc000
+My code segment is located at 0x00000000 and it is 8192 bytes long
+My data segment is located at 0x00400000 and it is 16797696 bytes long
+Creating and attaching segments:
+IA32_MMU::alloc(frames=1) => 0x00054000
+IA32_MMU::alloc(frames=2) => 0x00052000
+Segment(bytes=8192,flags=0x00000007) [Chunk::_pt=0x00054000] => 0xff843ec4
+Address_Space::attach(seg=0xff843ec4) => 0x10000000
+  code => 0x10000000 done!
+IA32_MMU::alloc(frames=5) => 0x0004d000
+IA32_MMU::alloc(frames=4101) => 0x0ef95000
+Segment(bytes=16797696,flags=0x00000007) [Chunk::_pt=0x0004d000] => 0xff843eb0
+Address_Space::attach(seg=0xff843eb0) => 0x10400000
+  data => 0x10400000 done!
+Copying segments: code => done!
+ data => done!
+Detaching segments:Address_Space::detach(seg=0xff843ec4)
+Address_Space::detach(seg=0xff843eb0)
+ done!
+Creating a clone task:Address_Space(pd=0x0fffc000) [Directory::pd=0x0fffc000] =>
+ 0xff83bee4
+Task::insert(Thread * t): 2 == 0
+Task::insert(Thread * t): 3 == 1
+Thread(entry=0x000003f0,state=1,priority=1,stack={b=0xff837edc,s=16384},context=
+{b=0xff83beac,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,e
+sp=0x00000000,eip=0x000003f0,cs=8,ds=10,es=10,fs=10,gs=10,ss=10,cr3=0x0fffc000}}
+) => 0x01404fb4
+Task::insert(Thread * t): 3 == 0
+Task::insert(Thread * t): 4 == 1
+Thread(entry=0x000003a0,state=1,priority=1,stack={b=0xff833ed4,s=16384},context=
+{b=0xff837ea4,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,e
+sp=0x00000000,eip=0x000003a0,cs=8,ds=10,es=10,fs=10,gs=10,ss=10,cr3=0x0fffc000}}
+) => 0x01404f7c
+ done!
+Thread::join(this=0x01404fb4,state=1)
+Thread::suspend(this=0xff843f3c)
+Thread::dispatch(prev=0xff843f3c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+HEARTY HELLO! I'm A!!
+Thread::yield(running=0x01404fb4)
+Thread::dispatch(prev=0x01404fb4,next=0x01404f7c)
+HELLO MAMA!! I'm B!!
+Thread::yield(running=0x01404f7c)
+Thread::dispatch(prev=0x01404f7c,next=0x01404fb4)
+Thread::exit(status=1) [running=0x01404fb4]
+Thread::dispatch(prev=0x01404fb4,next=0xff843f3c)
+Thread::join(this=0x01404f7c,state=1)
+Thread::suspend(this=0xff843f3c)
+Thread::dispatch(prev=0xff843f3c,next=0x01404f7c)
+Thread::exit(status=1) [running=0x01404f7c]
+Thread::dispatch(prev=0x01404f7c,next=0xff843f3c)
+Deleting the cloned task:~Thread(this=0x01404fb4,state=4,priority=1,stack={b=,c
+ontext={b=0xff83bd94,{eflags=6,eax=0xff843cd8,ebx=0x1404fb8,ecx=0x3fd,edx=0x3f8,
+esi=0xff843f3c,edi=0xff83bdcc,ebp=0xff83be24,esp=0xff83bdb4,eip=0xff707386,cs=8,
+ds=10,es=10,fs=10,gs=10,ss=10,cr3=0x0fffc000}})
+~Thread(this=0x01404f7c,state=4,priority=1,stack={b=,context={b=0xff837d8c,{efl
+ags=12,eax=0xff843cd8,ebx=0x1404f80,ecx=0x3fd,edx=0x3f8,esi=0xff843f3c,edi=0xff8
+37dc4,ebp=0xff837e1c,esp=0xff837dac,eip=0xff707386,cs=8,ds=10,es=10,fs=10,gs=10,
+ss=10,cr3=0x0fffc000}})
+~Address_Space(this=0xff83bee4) [Directory::pd=0x0fffc000]
+~Segment() [Chunk::_pt=0x00054000]
+IA32_MMU::free(frame=0x00052000,n=1)
+IA32_MMU::free(frame=0x00053000,n=1)
+IA32_MMU::free(frame=0x00054000,n=1)
+~Segment() [Chunk::_pt=0x0004d000]
+IA32_MMU::free(frame=0x0004d000,n=5)
+~Thread(this=0xff843f3c,state=0,priority=0,stack={b=,context={b=0xff843cfc,{efla
+gs=0xff83ff34,eax=0xff843d6c,ebx=0x80010,ecx=0xff843f3c,edx=0x66307830,esi=1,edi
+=20,ebp=0xff70a4d9,esp=0xff843d38,eip=0xff843d38,cs=8,ds=10,es=10,fs=10,gs=10,ss
+=10,cr3=0x0fffc000}})
+Thread::exit(status=-1) [running=0xff843f3c]
+Thread::dispatch(prev=0xff843f3c,next=0xff83fefc)
+The last thread has exited!
+Rebooting the machine ...

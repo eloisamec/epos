@@ -1,0 +1,338 @@
+Index: changes.diff
+===================================================================
+Index: include/system/config.h
+===================================================================
+--- include/system/config.h	(revision 3559)
++++ include/system/config.h	(working copy)
+@@ -7,15 +7,15 @@
+ // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
+ // This section is generated automatically from makedefs by $EPOS/etc/makefile
+ //============================================================================
+-#define MODE xxx
+-#define ARCH xxx
+-#define MACH xxx
+-#define MMOD xxx
+-#define APPL xxx
+-#define __mode_xxx__
+-#define __arch_xxx__
+-#define __mach_xxx__
+-#define __mmod_xxx__
++#define MODE builtin
++#define ARCH ia32
++#define MACH pc
++#define MMOD legacy
++#define APPL task_test
++#define __mode_builtin__
++#define __arch_ia32__
++#define __mach_pc__
++#define __mmod_legacy__
+ 
+ #if defined (__arch_avr__) || defined (__mmod_lm3s811__)
+ #define __no_networking__
+Index: include/system/traits.h
+===================================================================
+--- include/system/traits.h	(revision 3559)
++++ include/system/traits.h	(working copy)
+@@ -17,7 +17,7 @@
+ template<> struct Traits<Build>
+ {
+     enum {LIBRARY, BUILTIN};
+-    static const unsigned int MODE = LIBRARY;
++    static const unsigned int MODE = BUILTIN;
+ 
+     enum {IA32};
+     static const unsigned int ARCHITECTURE = IA32;
+Index: include/system/types.h
+===================================================================
+--- include/system/types.h	(revision 3559)
++++ include/system/types.h	(working copy)
+@@ -82,6 +82,7 @@
+ class Application;
+ 
+ class Thread;
++class Task;
+ 
+ template<typename> class Scheduler;
+ namespace Scheduling_Criteria
+Index: include/thread.h
+===================================================================
+--- include/thread.h	(revision 3559)
++++ include/thread.h	(working copy)
+@@ -8,6 +8,7 @@
+ #include <cpu.h>
+ #include <machine.h>
+ #include <scheduler.h>
++#include <task.h>
+ 
+ __BEGIN_SYS
+ 
+@@ -14,6 +15,7 @@
+ class Thread
+ {
+     friend class Init_First;
++	friend class Task;
+     friend class Scheduler<Thread>;
+     friend class Synchronizer_Common;
+     friend class Alarm;
+@@ -70,6 +72,10 @@
+     Thread(int (* entry)(Tn ...), Tn ... an);
+     template<typename ... Cn, typename ... Tn>
+     Thread(const Configuration & conf, int (* entry)(Tn ...), Tn ... an);
++	template<typename ... Tn>
++    Thread(Task * task, int (* entry)(Tn ...), Tn ... an);
++    template<typename ... Cn, typename ... Tn>
++    Thread(Task * task, const Configuration & conf, int (* entry)(Tn ...), Tn ... an);
+     ~Thread();
+ 
+     const volatile State & state() const { return _state; }
+@@ -124,6 +130,8 @@
+     Queue * _waiting;
+     Thread * volatile _joining;
+     Queue::Element _link;
++	Simple_List<Thread>::Element _link_task;
++	Task * _task;
+ 
+     static volatile unsigned int _thread_count;
+     static Scheduler_Timer * _timer;
+@@ -133,25 +141,48 @@
+ 
+ template<typename ... Tn>
+ inline Thread::Thread(int (* entry)(Tn ...), Tn ... an)
+-: _state(READY), _waiting(0), _joining(0), _link(this, NORMAL)
++: _state(READY), _waiting(0), _joining(0), _link(this, NORMAL), _link_task(this)
+ {
+     lock();
+     _stack = new (SYSTEM) char[STACK_SIZE];
+     _context = CPU::init_stack(_stack, STACK_SIZE, &implicit_exit, entry, an ...);
++	running()->_task->insert(this);
+     constructor(entry, STACK_SIZE); // implicit unlock
+ }
+ 
+ template<typename ... Cn, typename ... Tn>
+ inline Thread::Thread(const Configuration & conf, int (* entry)(Tn ...), Tn ... an)
+-: _state(conf.state), _waiting(0), _joining(0), _link(this, conf.criterion)
++: _state(conf.state), _waiting(0), _joining(0), _link(this, conf.criterion), _link_task(this)
+ {
+     lock();
+     _stack = new (SYSTEM) char[conf.stack_size];
+     _context = CPU::init_stack(_stack, conf.stack_size, &implicit_exit, entry, an ...);
++	running()->_task->insert(this);
+     constructor(entry, conf.stack_size); // implicit unlock
+ }
+ 
++template<typename ... Tn>
++inline Thread::Thread(Task * task, int (* entry)(Tn ...), Tn ... an)
++: _state(READY), _waiting(0), _joining(0), _link(this, NORMAL), _link_task(this), _task(task)
++{
++    lock();
++    _stack = new (SYSTEM) char[STACK_SIZE];
++    _context = CPU::init_stack(_stack, STACK_SIZE, &implicit_exit, entry, an ...);
++    _task->insert(this);
++    constructor(entry, STACK_SIZE); // implicit unlock
++}
+ 
++template<typename ... Cn, typename ... Tn>
++inline Thread::Thread(Task * task, const Configuration & conf, int (* entry)(Tn ...), Tn ... an)
++: _state(conf.state), _waiting(0), _joining(0), _link(this, conf.criterion), _link_task(this), _task(task)
++{
++    lock();
++    _stack = new (SYSTEM) char[conf.stack_size];
++    _context = CPU::init_stack(_stack, conf.stack_size, &implicit_exit, entry, an ...);
++    _task->insert(this);
++    constructor(entry, conf.stack_size); // implicit unlock
++}
++
+ // An event handler that triggers a thread (see handler.h)
+ class Thread_Handler : public Handler
+ {
+Index: src/abstraction/segment_test_traits.h
+===================================================================
+--- src/abstraction/segment_test_traits.h	(revision 3559)
++++ src/abstraction/segment_test_traits.h	(working copy)
+@@ -11,7 +11,7 @@
+ {
+     static const bool enabled = true;
+     static const bool debugged = true;
+-    static const bool hysterically_debugged = false;
++    static const bool hysterically_debugged = true;
+ };
+ 
+ template<> struct Traits<Build>
+@@ -38,8 +38,8 @@
+ {
+     static const bool error   = true;
+     static const bool warning = true;
+-    static const bool info    = false;
+-    static const bool trace   = false;
++    static const bool info    = true;
++    static const bool trace   = true;
+ };
+ 
+ template<> struct Traits<Lists>: public Traits<void>
+Index: src/abstraction/system_init.cc
+===================================================================
+--- src/abstraction/system_init.cc	(revision 3559)
++++ src/abstraction/system_init.cc	(working copy)
+@@ -7,6 +7,8 @@
+ 
+ void System::init()
+ {
++	Task::init();
++		
+     if(Traits<Alarm>::enabled)
+         Alarm::init();
+ }
+Index: src/abstraction/task.cc
+===================================================================
+--- src/abstraction/task.cc	(revision 0)
++++ src/abstraction/task.cc	(working copy)
+@@ -0,0 +1,71 @@
++#include <system.h>
++#include <task.h>
++
++__BEGIN_SYS
++
++Task * Task::_master;
++Simple_List<Thread> Task::_threads;
++
++Task::Task() { }
++
++Task::Task(const Segment & cs, const Segment & ds) {
++   _address_space = new (SYSTEM) Address_Space (MMU::current());
++   _code_segment = const_cast<Segment *>(&cs);
++   _data_segment = const_cast<Segment *>(&ds);
++   _code = CPU::Phy_Addr(Memory_Map<Machine>::APP_CODE);
++   _data = CPU::Phy_Addr(Memory_Map<Machine>::APP_DATA);
++}
++
++Task::~Task() {
++   delete _address_space;
++   delete _code_segment;
++   delete _data_segment;
++
++   while(!_threads.empty()) {
++       Thread * t = _threads.remove()->object();
++       delete t;
++   }
++}
++
++Task * Task::self() {
++       return Thread::self()->_task;
++}
++
++void Task::insert(Thread * t) {
++
++   kout << "Task::insert(Thread * t): " << _threads.size() << " == 0" << endl;
++
++   _threads.insert(&t->_link_task);
++   t->_task = this;
++
++   kout << "Task::insert(Thread * t): " << _threads.size() << " == 1" << endl;
++
++}
++
++void Task::remove(Thread * t) {
++   
++   _threads.remove(&t->_link_task);
++   
++}
++
++Address_Space * Task::address_space() const {
++   return _address_space;
++}
++
++Segment * Task::code_segment() const {
++   return _code_segment;
++}
++
++Segment * Task::data_segment() const {
++   return _data_segment;
++}
++
++CPU::Phy_Addr Task::code() const {
++   return _code;
++}
++
++CPU::Phy_Addr Task::data() const {
++   return _data;
++}
++
++__END_SYS
+\ No newline at end of file
+Index: src/abstraction/task_init.cc
+===================================================================
+--- src/abstraction/task_init.cc	(revision 0)
++++ src/abstraction/task_init.cc	(working copy)
+@@ -0,0 +1,20 @@
++#include <utility/elf.h>
++#include <mmu.h>
++#include <system.h>
++#include <task.h>
++
++__BEGIN_SYS
++
++void Task::init()
++{
++	System_Info<Machine> * si = System::info();
++
++    _master = new (SYSTEM) Task();
++    _master->_address_space = new (SYSTEM) Address_Space (MMU::current());
++    _master->_code_segment = new (SYSTEM) Segment (CPU::Phy_Addr(si->lm.app_code), si->lm.app_code_size);
++    _master->_data_segment = new (SYSTEM) Segment (CPU::Phy_Addr(si->lm.app_data), si->lm.app_data_size);
++    _master->_code = CPU::Phy_Addr(Memory_Map<Machine>::APP_CODE);
++    _master->_data = CPU::Phy_Addr(Memory_Map<Machine>::APP_DATA);
++}
++
++__END_SYS
+\ No newline at end of file
+Index: src/abstraction/thread.cc
+===================================================================
+--- src/abstraction/thread.cc	(revision 3559)
++++ src/abstraction/thread.cc	(working copy)
+@@ -80,6 +80,8 @@
+     if(_joining)
+         _joining->resume();
+ 
++	_task->remove(this);
++	
+     unlock();
+ 
+     delete _stack;
+@@ -321,6 +323,9 @@
+             prev->_state = READY;
+         next->_state = RUNNING;
+ 
++		if(prev->_task != next->_task){
++			next->_task->activate();
++        }
+         db<Thread>(TRC) << "Thread::dispatch(prev=" << prev << ",next=" << next << ")" << endl;
+         db<Thread>(INF) << "prev={" << prev << ",ctx=" << *prev->_context << "}" << endl;
+         db<Thread>(INF) << "next={" << next << ",ctx=" << *next->_context << "}" << endl;
+Index: src/abstraction/thread_init.cc
+===================================================================
+--- src/abstraction/thread_init.cc	(revision 3559)
++++ src/abstraction/thread_init.cc	(working copy)
+@@ -10,7 +10,11 @@
+ 
+ void Thread::init()
+ {
+-    int (* entry)() = reinterpret_cast<int (*)()>(__epos_app_entry);
++    int (* entry)();
++    if(Traits<Build>::MODE == Traits<Build>::LIBRARY)
++        entry = reinterpret_cast<int (*)()>(__epos_app_entry);
++    else
++        entry = reinterpret_cast<int (*)()>(System::info()->lm.app_entry);
+ 
+     db<Init, Thread>(TRC) << "Thread::init(entry=" << reinterpret_cast<void *>(entry) << ")" << endl;
+ 
+@@ -27,8 +31,8 @@
+     // Create the application's main thread
+     // This must precede idle, thus avoiding implicit rescheduling
+     // For preemptive scheduling, reschedule() is called, but it will preserve MAIN as the RUNNING thread
+-    first = new (SYSTEM) Thread(Configuration(RUNNING, MAIN), entry);
+-    new (SYSTEM) Thread(Configuration(READY, IDLE), &idle);
++    first = new (SYSTEM) Thread(Task::_master, Configuration(RUNNING, MAIN), entry);
++    new (SYSTEM) Thread(Task::_master, Configuration(READY, IDLE), &idle);
+ 
+     db<Init, Thread>(INF) << "Dispatching the first thread: " << first << endl;
+ 
