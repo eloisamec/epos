@@ -1,1 +1,0 @@
-../src/abstraction/segment_test.cc
