@@ -3,7 +3,7 @@
 #include <utility/ostream.h>
 #include <thread.h>
 #include <mutex.h>
-#include <semaphore.h>
+#include <stub/semaphore.h>
 #include <alarm.h>
 #include <display.h>
 
@@ -12,11 +12,10 @@
 const int iterations = 10;
 
 EPOS::S::Mutex table;
-
 EPOS::S::Thread * phil[5];
 EPOS::Semaphore * chopstick[5];
 
-EPOS::S::OStream cout;
+EPOS::OStream cout;
 
 int philosopher(int n, int l, int c)
 {
@@ -59,10 +58,10 @@ int main()
     table.lock();
     EPOS::S::Display::clear();
     EPOS::S::Display::position(0, 0);
-    cout << "The Philosopher's Dinner:" << endl;
+    cout << "The Philosopher's Dinner:" << EPOS::S::endl;
 
     for(int i = 0; i < 5; i++)
-        chopstick[i] = new Semaphore;
+        chopstick[i] = new EPOS::Semaphore;
 
     phil[0] = new EPOS::S::Thread(&philosopher, 0,  5, 32);
     phil[1] = new EPOS::S::Thread(&philosopher, 1, 10, 44);
@@ -70,7 +69,7 @@ int main()
     phil[3] = new EPOS::S::Thread(&philosopher, 3, 16, 24);
     phil[4] = new EPOS::S::Thread(&philosopher, 4, 10, 20);
 
-    cout << "Philosophers are alive and hungry!" << endl;
+    cout << "Philosophers are alive and hungry!" << EPOS::S::endl;
 
     EPOS::S::Display::position(7, 44);
     cout << '/';
@@ -84,14 +83,14 @@ int main()
     cout << '\\';
     EPOS::S::Display::position(19, 0);
 
-    cout << "The dinner is served ..." << endl;
+    cout << "The dinner is served ..." << EPOS::S::endl;
     table.unlock();
 
     for(int i = 0; i < 5; i++) {
         int ret = phil[i]->join();
         table.lock();
         EPOS::S::Display::position(20 + i, 0);
-        cout << "Philosopher " << i << " ate " << ret << " times " << endl;
+        cout << "Philosopher " << i << " ate " << ret << " times " << EPOS::S::endl;
         table.unlock();
     }
 
@@ -100,7 +99,7 @@ int main()
     for(int i = 0; i < 5; i++)
         delete phil[i];
 
-    cout << "The end!" << endl;
+    cout << "The end!" << EPOS::S::endl;
 
     return 0;
 }
