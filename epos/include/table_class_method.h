@@ -32,6 +32,18 @@ namespace Method {
 	namespace Condition {
 		enum { CONSTRUCTOR, DESTRUCTOR, WAIT, SIGNAL, BROADCAST };
 	}
+	
+	namespace Handler {
+		enum { };
+	}
+	
+	namespace Mutex {
+		enum { CONSTRUCTOR, DESTRUCTOR, LOCK, UNLOCK };
+	}
+	
+	namespace Mutex_Handler {
+		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR }; 
+	}
 		
 	namespace Semaphore {
 		enum { CONSTRUCTOR, DESTRUCTOR, P, V };

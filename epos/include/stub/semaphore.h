@@ -41,8 +41,8 @@ public:
     };
 
 private:
-   void * _obj_id;
-   Message * mensagem;
+	void * _obj_id;
+	Message * mensagem;
 };
 
 __END_API

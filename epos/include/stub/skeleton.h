@@ -16,6 +16,12 @@ public:
 	static void semaphore_p(Message * m);
 	static void semaphore_v(Message * m);
 	
+	// Mutex
+	static void mutex_constructor(Message * m);
+	static void mutex_destrutor(Message * m);
+	static void mutex_lock(Message * m);
+	static void mutex_unlock(Message * m);
+	
 	// Task
 	static void task_constructor(Message * m);
 	static void task_destrutor(Message * m);
