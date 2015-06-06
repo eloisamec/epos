@@ -7,85 +7,69 @@
 
 __BEGIN_API
 
-class Task {
+class Address_Space {
 
 public:
 
-    Task(const Segment &cs, const Segment &ds) {
+    Address_Space() {
 		message = new Message();
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::CONSTRUCTOR);
-    	message->param1((void*) cs);
-    	message->param2((void*) ds);
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::CONSTRUCTOR_1);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
     };
 	
-    ~Task(){
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::DESTRUCTOR);
+	Address_Space(MMU::Page_Directory * pd) {
+		message = new Message();
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::CONSTRUCTOR_2);
+		message->param1((void*) &pd);
+    	Skeleton::call(message);
+    	_obj_id = message->return_value();
+    };
+	
+    ~Address_Space(){
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::DESTRUCTOR);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
 		delete message;
     };
 
-    Address_Space * address_space() {
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::ADDRESS_SPACE);
+    Log_Addr attach(const Segment & seg) {
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::ATTACH_1);
+    	message->object_id(_obj_id);
+    	Skeleton::call(message);
+		Log_Addr address = reinterpret_cast<Log_Addr> message->return_value();
+		return address;
+    };
+
+	Log_Addr attach(const Segment & seg, Address_Space::Log_Addr addr) {
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::ATTACH_2;
     	message->object_id(_obj_id);
     	Skeleton::call(message);
 		Address_Space * address_space = reinterpret_cast<Address_Space *> message->return_value();
 		return address_space;
     };
-
-    const Segment * code_segment(){
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::CODE_SEGMENT);
+	
+    void detach(const Segment & seg){
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::DETACH);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
 		Segment * cs = reinterpret_cast<Segment *> message->return_value();
 		return cs;
     };
 	
-	const Segment * data_segment(){
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::DATA_SEGMENT);
+	Phy_Addr physical(Address_Space::Log_Addr address) {
+    	message->class_id(Class::Address_Space);
+    	message->method_id(Method::Address_Space::PHYSICAL);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Segment * ds = reinterpret_cast<Segment *> message->return_value();
-		return ds;
-    };
-	
-	Log_Addr code(){
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::CODE);
-    	message->object_id(_obj_id);
-    	Skeleton::call(message);
-		Log_Addr code = reinterpret_cast<Log_Addr> message->return_value();
-		return code;
-    };
-	
-	
-	Log_Addr data(){
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::DATA);
-    	message->object_id(_obj_id);
-    	Skeleton::call(message);
-		Log_Addr data = reinterpret_cast<Log_Addr> message->return_value();
-		return data;
-    };
-
-	static Task * self() {
-		if (!message) {
-			Message * message = new Message();
-		}
-    	message->class_id(Class::Task);
-    	message->method_id(Method::Task::SELF);
-    	message->object_id(_obj_id);
-    	Skeleton::call(message);
-		Task * task = reinterpret_cast<Task *> message->return_value();
-		return task;
-		
+		Address_Space * address_space = reinterpret_cast<Address_Space *> message->return_value();
+		return address_space;
     };
 
 private:

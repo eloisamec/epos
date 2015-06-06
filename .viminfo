@@ -35,18 +35,22 @@
 	x
 
 # File marks:
-'0  1  0  ~/epos/app/fork.cc
-'1  30  24  ~/epos/app/fork.cc
-'2  5  14  ~/epos/app/philosophers_dinner.cc
-'3  106  0  ~/epos/app/philosophers_dinner.cc
-'4  103  34  ~/epos/app/philosophers_dinner.cc
-'5  65  32  ~/epos/app/philosophers_dinner.cc
-'6  6  1  ~/epos/app/philosophers_dinner.cc
-'7  1  41  ~/epos/app/philosophers_dinner.cc
-'8  94  70  ~/epos/app/philosophers_dinner.cc
-'9  1  0  ~/epos P1/src/abstraction/semaphore_test.cc
+'0  50  0  ~/epos/src/abstraction/alarm_test.cc
+'1  1  0  ~/epos/src/abstraction/chronometer_test.cc
+'2  100  0  ~/epos/app/fork.cc
+'3  1  0  ~/epos/app/fork.cc
+'4  30  24  ~/epos/app/fork.cc
+'5  5  14  ~/epos/app/philosophers_dinner.cc
+'6  106  0  ~/epos/app/philosophers_dinner.cc
+'7  103  34  ~/epos/app/philosophers_dinner.cc
+'8  65  32  ~/epos/app/philosophers_dinner.cc
+'9  6  1  ~/epos/app/philosophers_dinner.cc
 
 # Jumplist (newest first):
+-'  50  0  ~/epos/src/abstraction/alarm_test.cc
+-'  1  0  ~/epos/src/abstraction/alarm_test.cc
+-'  1  0  ~/epos/src/abstraction/chronometer_test.cc
+-'  100  0  ~/epos/app/fork.cc
 -'  1  0  ~/epos/app/fork.cc
 -'  30  24  ~/epos/app/fork.cc
 -'  5  14  ~/epos/app/philosophers_dinner.cc
@@ -87,7 +91,6 @@
 -'  1  0  ~/epos/include/utility/handler.h
 -'  60  15  ~/epos/src/abstraction/alarm.cc
 -'  25  0  ~/epos/src/abstraction/alarm_test.cc
--'  1  0  ~/epos/src/abstraction/alarm_test.cc
 -'  211  0  ~/epos/include/utility/queue.h
 -'  24  23  ~/epos/app/philosophers_dinner.cc
 -'  92  0  ~/epos/app/philosophers_dinner.cc
@@ -142,13 +145,17 @@
 -'  1  0  ~/epos/app/philosophers_dinner_traits.h
 -'  126  0  ~/epos/app/philosophers_dinner_traits.h
 -'  1  0  ~/epos/app/philosophers_dinner_traits.h
--'  126  0  ~/epos/app/philosophers_dinner_traits.h
--'  1  0  ~/epos/app/philosophers_dinner_traits.h
 
 # History of marks within files (newest to oldest):
 
-> ~/epos/app/fork.cc
+> ~/epos/src/abstraction/alarm_test.cc
+	"	50	0
+
+> ~/epos/src/abstraction/chronometer_test.cc
 	"	1	0
+
+> ~/epos/app/fork.cc
+	"	100	0
 	^	30	25
 	.	30	25
 	+	8	1
@@ -337,9 +344,6 @@
 
 > ~/epos/include/utility/handler.h
 	"	14	0
-
-> ~/epos/src/abstraction/alarm_test.cc
-	"	25	0
 
 > ~/epos/src/abstraction/semaphore.cc
 	"	40	0

@@ -15,7 +15,7 @@ namespace Class {
 		   SEGMENT,
 		   SEMAPHORE,
 		   SEMAPHORE_HANDLER,
-		   TASK
+		   TASK,
 		   THREAD,
 		   THREAD_HANDLER };
 }
@@ -23,7 +23,7 @@ namespace Class {
 namespace Method {
 
 	namespace Address_Space {
-		enum { CONSTRUCTOR, DESTRUCTOR, ATTACH_1, ATTACH_2, DETACH, PHYSICAL };
+		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, DESTRUCTOR, ATTACH_1, ATTACH_2, DETACH, PHYSICAL };
 	}
 	
 	namespace Alarm {
@@ -35,32 +35,48 @@ namespace Method {
 	}
 	
 	namespace Condition_Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR,  };
+		enum { CONSTRUCTOR, DESTRUCTOR  };
 	}
-	//namespace Handler {
-	//	enum { };
-	//}
+	
+	namespace Display {
+		enum { CONSTRUCTOR, DESTRUCTOR  };
+	}
+	
+	namespace Handler {
+		enum { };
+	}
 	
 	namespace Mutex {
 		enum { CONSTRUCTOR, DESTRUCTOR, LOCK, UNLOCK };
 	}
 	
-	//namespace Mutex_Handler {
-	//	enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR }; 
-	//}
+	namespace Mutex_Handler {
+		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR }; 
+	}
 		
+	namespace Segment {
+		enum { CONSTRUCTOR, DESTRUCTOR };
+	}
+	
 	namespace Semaphore {
 		enum { CONSTRUCTOR, DESTRUCTOR, P, V };
+	}
+	
+	namespace Semaphore_Handler {
+		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR };
 	}
 	
 	namespace Task {
 		enum { CONSTRUCTOR, DESTRUCTOR, ADDRESS_SPACE, CODE_SEGMENT, CODE, DATA_SEGMENT, DATA, SELF };
 	}
 
-}
-
-namespace API {
-	typedef unsigned long Log_Addr;
+	namespace Thread {
+		enum { CONSTRUCTOR, DESTRUCTOR };
+	}
+	
+	namespace Thread_Handler {
+		enum { CONSTRUCTOR, DESTRUCTOR };
+	}
 }
 
 __END_API

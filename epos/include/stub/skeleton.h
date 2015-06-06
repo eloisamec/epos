@@ -11,6 +11,15 @@ public:
 	static void call(Message *);
 	
 private:
+	// Address Space
+	static void address_space_constructor_1(Message * m);
+	static void address_space_constructor_2(Message * m);
+	static void address_space_destrutor(Message * m);
+	static void address_space_attach_1(Message * m);
+	static void address_space_attach_2(Message * m);
+	static void address_space_detach(Message * m);
+	static void address_space_physical(Message * m);
+
 	// Condition
 	static void condition_constructor(Message * m);
 	static void condition_destrutor(Message * m);

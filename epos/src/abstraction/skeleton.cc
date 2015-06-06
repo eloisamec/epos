@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include <mutex.h>
 #include <task.h>
-//#include <address_space.h>
+#include <address_space.h>
 //#include <segment.h>
 //#include <architecture/ia32/mmu.h>
 
@@ -12,6 +12,17 @@ __BEGIN_SYS
 
 	void Skeleton::call(Message * m){
 		switch(m->class_id()){
+		case Class::ADDRESS_SPACE:
+			switch(m->method_id()){
+				case Method::Address_Space::CONSTRUCTOR_1: address_space_constructor_1(m); break;
+				case Method::Address_Space::CONSTRUCTOR_2: address_space_constructor_2(m); break;
+				case Method::Address_Space::DESTRUCTOR: address_space_destrutor(m); break;
+				case Method::Address_Space::ATTACH_1: address_space_attach_1(m); break;
+				case Method::Address_Space::ATTACH_2: address_space_attach_2(m); break;
+				case Method::Address_Space::DETACH: address_space_detach(m); break;
+				case Method::Address_Space::PHYSICAL: address_space_physical(m); break;
+			}
+			break;
 		case Class::CONDITION:
 			switch(m->method_id()){
 				case Method::Condition::CONSTRUCTOR: condition_constructor(m); break;
@@ -50,6 +61,50 @@ __BEGIN_SYS
 			}
 			break;
 		}
+	}
+	
+	// Address Space
+	void Skeleton::address_space_constructor_1(Message * m) {
+		Address_Space * address_space = new (SYSTEM) Address_Space();
+		m->return_value(reinterpret_cast<void *>(&address_space));
+	}
+	
+	void Skeleton::address_space_constructor_2(Message * m) {
+		MMU::Page_Directory pd = *reinterpret_cast<MMU::Page_Directory *>(m->param1());
+		Address_Space * address_space = new (SYSTEM) Address_Space(&pd);
+		m->return_value(reinterpret_cast<void *>(&address_space));
+	}
+	
+	void Skeleton::address_space_destrutor(Message * m) {
+		Address_Space * address_space = reinterpret_cast<Address_Space *>(m->object_id());
+		delete address_space;
+	}
+	
+	void Skeleton::address_space_attach_1(Message * m) {
+		Address_Space * address_space = reinterpret_cast<Address_Space*>(m->object_id());
+		Segment p1 = *reinterpret_cast<Segment*>(m->param1());
+		CPU_Common::Log_Addr la = address_space->attach(p1);
+		m->return_value(reinterpret_cast<void *>(&la));
+	}
+	
+	void Skeleton::address_space_attach_2(Message * m) {
+		Address_Space * address_space = reinterpret_cast<Address_Space*>(m->object_id());
+		Segment seg = *reinterpret_cast<Segment*>(m->param1());
+		CPU_Common::Log_Addr log_addr = *reinterpret_cast<CPU_Common::Log_Addr *>(m->param2());
+		CPU_Common::Log_Addr la = address_space->attach(seg, log_addr);
+		m->return_value(reinterpret_cast<void *>(&la));
+	}
+	
+	void Skeleton::address_space_detach(Message * m) {
+		Address_Space * address_space = reinterpret_cast<Address_Space*>(m->object_id());
+		Segment seg = *reinterpret_cast<Segment*>(m->param1());
+		address_space->detach(seg);
+	}
+	
+	void Skeleton::address_space_physical(Message * m) {
+		CPU_Common::Log_Addr log_addr = *reinterpret_cast<CPU_Common::Log_Addr*>(m->param1());
+		Address_Space * address_space = reinterpret_cast<Address_Space*>(m->object_id());
+		address_space->physical(log_addr);
 	}
 	
 	// Condition
@@ -143,7 +198,7 @@ __BEGIN_SYS
 	void Skeleton::task_code_segment(Message * m) {
 		Task * task = reinterpret_cast<Task*>(m->object_id());
 		Segment * cs = const_cast<Segment *>(task->code_segment());
-		m->return_value(reinterpret_cast<void *> (cs));
+		m->return_value(reinterpret_cast<void *>(cs));
 	}
 	
 	void Skeleton::task_code(Message * m) {
