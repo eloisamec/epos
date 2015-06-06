@@ -4,36 +4,39 @@
 __BEGIN_API
 
 namespace Class {
-	enum { //ADDRESS_SPACE, 
-		   //ALARM, 
-		   //ALARM_HANDLER,
+	enum { ADDRESS_SPACE, 
+		   ALARM, 
 		   CONDITION, 
-		   //CONDITION_HANDLER,
+		   CONDITION_HANDLER,
+		   DISPLAY,
+		   HANDLER,
 		   MUTEX, 
-		   //MUTEX_HANDLER,
-		   //SEGMENT,
+		   MUTEX_HANDLER,
+		   SEGMENT,
 		   SEMAPHORE,
-		   //SEMAPHORE_HANDLER,
+		   SEMAPHORE_HANDLER,
 		   TASK
-		   //THREAD,
-		   //THREAD_HANDLER 
-		   };
+		   THREAD,
+		   THREAD_HANDLER };
 }
 
 namespace Method {
 
-	//namespace Address_Space {
-	//	enum { CONSTRUCTOR, DESTRUCTOR, ATTACH_1, ATTACH_2, DETACH, PHYSICAL };
-	//}
+	namespace Address_Space {
+		enum { CONSTRUCTOR, DESTRUCTOR, ATTACH_1, ATTACH_2, DETACH, PHYSICAL };
+	}
 	
-	//namespace Alarm {
-	//	enum { CONSTRUCTOR, DESTRUCTOR, FREQUENCY, DELAY };
-	//}
+	namespace Alarm {
+		enum { CONSTRUCTOR, DESTRUCTOR, FREQUENCY, DELAY };
+	}
 	
 	namespace Condition {
 		enum { CONSTRUCTOR, DESTRUCTOR, WAIT, SIGNAL, BROADCAST };
 	}
 	
+	namespace Condition_Handler {
+		enum { CONSTRUCTOR, DESTRUCTOR,  };
+	}
 	//namespace Handler {
 	//	enum { };
 	//}
