@@ -8,7 +8,15 @@ __BEGIN_SYS
 class Skeleton {
 
 public:
-	static void call(Message * m);
+	static void call(Message *);
+	
+private:
+	// Condition
+	static void condition_constructor(Message * m);
+	static void condition_destrutor(Message * m);
+	static void condition_wait(Message * m);
+	static void condition_signal(Message * m);
+	static void condition_broadcast(Message * m);
 	
 	// Semaphore
 	static void semaphore_constructor(Message * m);
@@ -19,7 +27,7 @@ public:
 	// Mutex
 	static void mutex_constructor(Message * m);
 	static void mutex_destrutor(Message * m);
-	static void mutex_lock(Message * m);
+	static void mutex_lock(Message * m);	
 	static void mutex_unlock(Message * m);
 	
 	// Task

@@ -1,14 +1,16 @@
-#ifndef __Task_h
-#define __Task_h
+#ifndef __task_h
+#define __task_h
 
-#include <table_class_method.h>
+#include <app_types.h>
 #include <stub/message.h>
 #include <stub/skeleton.h>
 
 __BEGIN_API
 
 class Task {
+
 public:
+
     Task(const Segment &cs, const Segment &ds) {
 		message = new Message();
     	message->class_id(Class::Task);

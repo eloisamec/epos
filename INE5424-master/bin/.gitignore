@@ -1,0 +1,8 @@
+*
+!.gitignore
+# EPOS' unnecessarily arcane bulid system depends on the existence of 
+# this directory (and also lib/) to correctly build applications.
+# This .gitignore tells git to ignore every file in this directory,
+# except for this file; it exists solely to keep this directory
+# nonempty, so that git does not refuse to include it in commits.
+# It is a workaround to an workaround...

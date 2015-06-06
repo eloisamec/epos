@@ -1,16 +1,26 @@
 #include <stub/skeleton.h>
-#include <table_class_method.h>
+#include <app_types.h>
+#include <condition.h>
 #include <semaphore.h>
 #include <mutex.h>
 #include <task.h>
-#include <address_space.h>
-#include <segment.h>
-#include <architecture/ia32/mmu.h>
+//#include <address_space.h>
+//#include <segment.h>
+//#include <architecture/ia32/mmu.h>
 
 __BEGIN_SYS
 
 	void Skeleton::call(Message * m){
 		switch(m->class_id()){
+		case Class::CONDITION:
+			switch(m->method_id()){
+				case Method::Condition::CONSTRUCTOR: condition_constructor(m); break;
+				case Method::Condition::DESTRUCTOR: condition_destrutor(m); break;
+				case Method::Condition::WAIT: condition_wait(m); break;
+				case Method::Condition::SIGNAL: condition_signal(m); break;
+				case Method::Condition::BROADCAST: condition_broadcast(m); break;
+			}
+			break;
 		case Class::SEMAPHORE:
 			switch(m->method_id()){
 				case Method::Semaphore::CONSTRUCTOR: semaphore_constructor(m); break;
@@ -42,6 +52,32 @@ __BEGIN_SYS
 		}
 	}
 	
+	// Condition
+	void Skeleton::condition_constructor(Message * m) {
+		Condition * condition = new (SYSTEM) Condition();
+		m->return_value(reinterpret_cast<void *>(&condition));
+	}
+	
+	void Skeleton::condition_destrutor(Message * m) {
+		Condition * condition = reinterpret_cast<Condition*>(m->object_id());
+		delete condition;
+	}
+	
+	void Skeleton::condition_wait(Message * m) {
+		Condition * condition = reinterpret_cast<Condition*>(m->object_id());
+		condition->wait();
+	}
+	
+	void Skeleton::condition_signal(Message * m) {
+		Condition * condition = reinterpret_cast<Condition*>(m->object_id());
+		condition->signal();
+	}
+	
+	void Skeleton::condition_broadcast(Message * m) {
+		Condition * condition = reinterpret_cast<Condition*>(m->object_id());
+		condition->broadcast();
+	}
+				
 	// Semaphore
 	void Skeleton::semaphore_constructor(Message * m){
 		int v = reinterpret_cast<int>(m->param1());
@@ -90,8 +126,7 @@ __BEGIN_SYS
 		Segment p1 = *reinterpret_cast<Segment*>(m->param1());
 		Segment p2 = *reinterpret_cast<Segment*>(m->param2());
 		Task * task = new (SYSTEM) Task(p1, p2);
-		m-> return_value(reinterpret_cast<void *>(&task));
-		
+		m-> return_value(reinterpret_cast<void *>(&task));	
 	}
 	
 	void Skeleton::task_destrutor(Message * m) {
@@ -113,25 +148,25 @@ __BEGIN_SYS
 	
 	void Skeleton::task_code(Message * m) {
 		Task * task = reinterpret_cast<Task*>(m->object_id());
-		CPU::Log_Addr code = *reinterpret_cast<CPU::Log_Addr *>(task->code());
-		m->return_value(reinterpret_cast<void *> (code));
+		CPU_Common::Log_Addr code = task->code();
+		m->return_value(reinterpret_cast<void *>(&code));
 	}
 	
 	void Skeleton::task_data_segment(Message * m) {
 		Task * task = reinterpret_cast<Task*>(m->object_id());
 		Segment * ds = const_cast<Segment *>(task->data_segment());
-		m->return_value(reinterpret_cast<void *> (ds));
+		m->return_value(reinterpret_cast<void *>(ds));
 	}
 	
 	void Skeleton::task_data(Message * m) {
 		Task * task = reinterpret_cast<Task*>(m->object_id());
-		API::Log_Addr data = *reinterpret_cast<API::Log_Addr *>(task->data());
-		m->return_value(reinterpret_cast<void *> (data));
+		CPU_Common::Log_Addr data = task->data();
+		m->return_value(reinterpret_cast<void *>(&data));
 	}
 	
 	void Skeleton::task_self(Message * m) {
 		Task * task = Task::self();
-		m->return_value(reinterpret_cast<void *> (task));
+		m->return_value(reinterpret_cast<void *>(task));
 	}
 	
 __END_SYS

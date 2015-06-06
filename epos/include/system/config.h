@@ -7,12 +7,12 @@
 // ARCHITECTURE, MACHINE, AND APPLICATION SELECTION
 // This section is generated automatically from makedefs by $EPOS/etc/makefile
 //============================================================================
-#define MODE library
+#define MODE builtin
 #define ARCH ia32
 #define MACH pc
 #define MMOD legacy
-#define APPL semaphore_test
-#define __mode_library__
+#define APPL fork
+#define __mode_builtin__
 #define __arch_ia32__
 #define __mach_pc__
 #define __mmod_legacy__
