@@ -18,7 +18,7 @@ public:
     	message->param1((void*) &flags);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
-    };
+    }
 	
 	Segment(Phy_Addr phy_addr, unsigned int bytes, Flags flags = Flags::APP) {
 		message = new Message();
@@ -29,7 +29,7 @@ public:
     	message->param1((void*) &flags);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
-    };
+    }
 	
     ~Segment(){
     	message->class_id(Class::SEGMENT);
@@ -37,7 +37,7 @@ public:
     	message->object_id(_obj_id);
     	Skeleton::call(message);
 		delete message;
-    };
+    }
 
 	unsigned int size() const{
     	message->class_id(Class::SEGMENT);
@@ -46,7 +46,7 @@ public:
     	Skeleton::call(message);
 		unsigned int size = reinterpret_cast<int*>(message->return_value());
 		return size;
-    };
+    }
 
     Phy_Addr phy_address() const{
     	message->class_id(Class::SEGMENT);
@@ -55,7 +55,7 @@ public:
     	Skeleton::call(message);
 		Phy_Addr phy_addr = reinterpret_cast<Phy_Addr*>(message->return_value());
 		return phy_addr;
-    };
+    }
 	
 	int resize(int amount){
     	message->class_id(Class::SEGMENT);
@@ -65,7 +65,7 @@ public:
     	Skeleton::call(message);
 		int size = reinterpret_cast<int*>(message->return_value());
 		return size;
-    };
+    }
 
 private:
 	void * _obj_id;

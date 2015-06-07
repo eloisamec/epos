@@ -14,8 +14,8 @@ public:
 		message = new Message();
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_1);
-		message->variadic1[](void* (*entry)...);
-		message->variadic2[](void* an...);
+		message->variadic1(void* (*entry)...);
+		message->variadic2(void* an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}
@@ -25,8 +25,8 @@ public:
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_2);
 		message->param1(void* task);
-		message->variadic1[](void* (*entry)...);
-		message->variadic2[](void* an...);
+		message->variadic1(void* (*entry)...);
+		message->variadic2(void* an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}

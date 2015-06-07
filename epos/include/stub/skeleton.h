@@ -45,7 +45,6 @@ private:
 	// Handler
 	static void handler_constructor(Message * m);
 	static void handler_destructor(Message * m);
-	static void handler_operator(Message * m);
 	
 	// Mutex
 	static void mutex_constructor(Message * m);

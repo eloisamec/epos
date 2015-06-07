@@ -1,11 +1,11 @@
 // EPOS Semaphore Abstraction Test Program
 
+#include <stub/display.h>
 #include <utility/ostream.h>
 #include <thread.h>
 #include <stub/mutex.h>
 #include <stub/semaphore.h>
 #include <stub/alarm.h>
-#include <stub/display.h>
 
 using namespace EPOS::APP;
 

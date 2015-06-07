@@ -1,14 +1,15 @@
 #include <stub/skeleton.h>
+#include <utility/handler.h>
 #include <address_space.h>
 #include <alarm.h>
 #include <app_types.h>
 #include <condition.h>
 #include <display.h>
 #include <mutex.h>
+#include <segment.h>
 #include <semaphore.h>
 #include <task.h>
 #include <thread.h>
-#include <segment.h>
 
 __BEGIN_SYS
 
@@ -57,7 +58,6 @@ __BEGIN_SYS
 				switch(m->method_id()){
 					case Method::Handler::CONSTRUCTOR: handler_constructor(m); break;
 					case Method::Handler::DESTRUCTOR: handler_destructor(m); break;
-					case Method::Handler::OPERATOR: handler_operator(m); break;
 				}
 				break;
 			case Class::MUTEX:
@@ -218,7 +218,7 @@ __BEGIN_SYS
 	
 	// Display
 	void Skeleton::display_constructor(Message * m) {
-		Serial_Display();
+		Display();
 	}
 	
 	void Skeleton::display_clear(Message * m) {
@@ -255,15 +255,14 @@ __BEGIN_SYS
 	
 	// Handler
 	void Skeleton::handler_constructor(Message * m) {
-	
+		Function * h = reinterpret_cast<Function*>(m->param1());
+		Function_Handler * handler = new (SYSTEM) Function_Handler(h);
+		m->return_value(reinterpret_cast<void *>(&handler));
 	}
 	
 	void Skeleton::handler_destructor(Message * m) {
-	
-	}
-	
-	void Skeleton::handler_operator(Message * m) {
-	
+		Function_Handler * handler = reinterpret_cast<Function_Handler*>(m->object_id());
+		delete handler;
 	}
 	
 	// Mutex
@@ -396,7 +395,8 @@ __BEGIN_SYS
 	
 	// Thread
 	void Skeleton::thread_constructor_1(Message * m) {
-	
+		//Thread * thread = new (SYSTEM) Thread(m->variadic1(), m->variadic2());
+		//m-> return_value(reinterpret_cast<void *>(&thread));
 	}
 	
 	void Skeleton::thread_constructor_2(Message * m) {

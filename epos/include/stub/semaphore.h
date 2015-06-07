@@ -17,7 +17,7 @@ public:
     	message->param1((void*) &v);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
-    };
+    }
 	
     ~Semaphore(){
     	message->class_id(Class::SEMAPHORE);
@@ -25,21 +25,21 @@ public:
     	message->object_id(_obj_id);
     	Skeleton::call(message);
 		delete message;
-    };
+    }
 
     void p(){
     	message->class_id(Class::SEMAPHORE);
     	message->method_id(Method::Semaphore::P);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-    };
+    }
 
     void v(){
     	message->class_id(Class::SEMAPHORE);
     	message->method_id(Method::Semaphore::V);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-    };
+    }
 
 private:
 	void * _obj_id;

@@ -13,6 +13,7 @@ __BEGIN_API
     typedef CPU::Log_Addr Log_Addr;
 	typedef MMU::Flags Flags;
     typedef CPU::Phy_Addr Phy_Addr;
+    typedef void (Function)();
 	
 namespace Class {
 	enum { ADDRESS_SPACE, 
@@ -46,7 +47,7 @@ namespace Method {
 	}
 	
 	namespace Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR };
+		enum { CONSTRUCTOR, DESTRUCTOR };
 	}
 	
 	namespace Mutex {
