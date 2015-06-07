@@ -3,12 +3,12 @@
 #include <alarm.h>
 #include <app_types.h>
 #include <condition.h>
+#include <display.h>
 #include <mutex.h>
 #include <semaphore.h>
 #include <task.h>
-#include <display.h>
-//#include <segment.h>
-//#include <architecture/ia32/mmu.h>
+#include <thread.h>
+#include <segment.h>
 
 __BEGIN_SYS
 
@@ -289,27 +289,39 @@ __BEGIN_SYS
 	
 	// Segment
 	void Skeleton::segment_constructor_1(Message * m) {
-	
+		unsigned int bytes = *reinterpret_cast<unsigned int*>(m->param1());
+		Flags flags = *reinterpret_cast<Flags*>(m->param2());
+		Segment * segment = new (SYSTEM) Segment(bytes, flags);
+		m->return_value(reinterpret_cast<void *>(segment));
 	}
 	
 	void Skeleton::segment_constructor_2(Message * m) {
-	
+		Phy_Addr phy_addr = reinterpret_cast<Phy_Addr*>(m->param2());
+		unsigned int bytes = *reinterpret_cast<unsigned int*>(m->param2());
+		Flags flags = *reinterpret_cast<Flags*>(m->param3());
+		Segment * segment = new (SYSTEM) Segment(phy_addr, bytes, flags);
+		m->return_value(reinterpret_cast<void *>(segment));
 	}
 	
 	void Skeleton::segment_destructor(Message * m) {
-	
+		Segment * segment = reinterpret_cast<Segment*>(m->object_id());
+		delete segment;
 	}
 	
 	void Skeleton::segment_size(Message * m) {
-	
+		Segment * segment = reinterpret_cast<Segment*>(m->object_id());
+		segment->size();
 	}
 	
 	void Skeleton::segment_phy_address(Message * m) {
-	
+		Segment * segment = reinterpret_cast<Segment*>(m->object_id());
+		segment->phy_address();
 	}
 	
 	void Skeleton::segment_resize(Message * m) {
-	
+		Segment * segment = reinterpret_cast<Segment*>(m->object_id());
+		int amount = *reinterpret_cast<int*>(m->param1());
+		segment->resize(amount);
 	}
 	
 	// Semaphore

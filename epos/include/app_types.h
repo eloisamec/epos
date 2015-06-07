@@ -4,7 +4,6 @@
 #include <system/config.h>
 #include <tsc.h>
 #include <rtc.h>
-//#include <mmu.h>
 
 __BEGIN_API
 
@@ -12,8 +11,8 @@ __BEGIN_API
 	typedef TSC::Hertz Hertz;
 	typedef CPU::Phy_Addr Phy_Addr;
     typedef CPU::Log_Addr Log_Addr;
-
-    //using MMU::Directory::activate;
+	typedef MMU::Flags Flags;
+    typedef CPU::Phy_Addr Phy_Addr;
 	
 namespace Class {
 	enum { ADDRESS_SPACE, 

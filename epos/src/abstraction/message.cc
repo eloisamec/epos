@@ -31,12 +31,6 @@ __BEGIN_API
 
 	void Message::param7(void * ptr){ _param7 = ptr; }
 	void * Message::param7(){ return _param7; }
-
-	//void variadic1(void...) { 
-	//	int size = sizeof...(void ...);
-	//	_variadic1[size] = {void ...};
-	//}
-	//void * variadic1[]() { return _variadic1[]; }
 	
 	//void variadic2[](void ... *ptr) { 
 	//	int size = sizeof...(ptr);
