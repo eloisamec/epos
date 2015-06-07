@@ -15,8 +15,8 @@ public:
 		message = new Message();
     	message->class_id(Class::TASK);
     	message->method_id(Method::Task::CONSTRUCTOR);
-    	message->param1((void*) cs);
-    	message->param2((void*) ds);
+    	message->param1((void*) &cs);
+    	message->param2((void*) &ds);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
     };
@@ -34,7 +34,7 @@ public:
     	message->method_id(Method::Task::ADDRESS_SPACE);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Address_Space * address_space = reinterpret_cast<Address_Space *> message->return_value();
+		Address_Space * address_space = reinterpret_cast<Address_Space *>(message->return_value());
 		return address_space;
     };
 
@@ -43,7 +43,7 @@ public:
     	message->method_id(Method::Task::CODE_SEGMENT);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Segment * cs = reinterpret_cast<Segment *> message->return_value();
+		Segment * cs = reinterpret_cast<Segment *>(message->return_value());
 		return cs;
     };
 	
@@ -52,7 +52,7 @@ public:
     	message->method_id(Method::Task::DATA_SEGMENT);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Segment * ds = reinterpret_cast<Segment *> message->return_value();
+		Segment * ds = reinterpret_cast<Segment *>(message->return_value());
 		return ds;
     };
 	
@@ -61,7 +61,7 @@ public:
     	message->method_id(Method::Task::CODE);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Log_Addr code = reinterpret_cast<Log_Addr> message->return_value();
+		Log_Addr code = reinterpret_cast<Log_Addr*>(message->return_value());
 		return code;
     };
 	
@@ -71,26 +71,23 @@ public:
     	message->method_id(Method::Task::DATA);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Log_Addr data = reinterpret_cast<Log_Addr> message->return_value();
+		Log_Addr data = reinterpret_cast<Log_Addr*>(message->return_value());
 		return data;
     };
 
 	static Task * self() {
-		if (!message) {
-			Message * message = new Message();
-		}
-    	message->class_id(Class::TASK);
-    	message->method_id(Method::Task::SELF);
-    	message->object_id(_obj_id);
-    	Skeleton::call(message);
-		Task * task = reinterpret_cast<Task *> message->return_value();
+		Message message = Message();
+		message.class_id(Class::TASK);
+    	message.method_id(Method::Task::SELF);
+    	Skeleton::call(&message);
+		Task * task = reinterpret_cast<Task *>(message.return_value());
 		return task;
 		
     };
 
 private:
-   void * _obj_id;
-   Message * message;
+	void * _obj_id;
+	Message * message;
 };
 
 __END_APP

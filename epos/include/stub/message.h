@@ -38,11 +38,11 @@ public:
 	void param7(void * ptr);
 	void * param7();
 
-	void variadic1(void ...);
-	void * variadic1();
+	//void variadic1(void ...);
+	//void * variadic1();
 	
-	void variadic2(void ...);
-	void * variadic2();
+	//void variadic2(void ...);
+	//void * variadic2();
 	
 	void return_value(void * ptr);
 	void * return_value();

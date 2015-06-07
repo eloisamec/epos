@@ -41,16 +41,16 @@ public:
     	message->method_id(Method::Address_Space::ATTACH_1);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Log_Addr address = reinterpret_cast<Log_Addr> message->return_value();
+		Log_Addr address = reinterpret_cast<Log_Addr*>(message->return_value());
 		return address;
     };
 
-	Log_Addr attach(const Segment & seg, Address_Space::Log_Addr addr) {
+	Log_Addr attach(const Segment & seg, Log_Addr addr) {
     	message->class_id(Class::ADDRESS_SPACE);
-    	message->method_id(Method::Address_Space::ATTACH_2;
+    	message->method_id(Method::Address_Space::ATTACH_2);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Address_Space * address_space = reinterpret_cast<Address_Space *> message->return_value();
+		Address_Space * address_space = reinterpret_cast<Address_Space *>(message->return_value());
 		return address_space;
     };
 	
@@ -61,12 +61,12 @@ public:
     	Skeleton::call(message);
     };
 	
-	Phy_Addr physical(Address_Space::Log_Addr address) {
+	Phy_Addr physical(Log_Addr address) {
     	message->class_id(Class::ADDRESS_SPACE);
     	message->method_id(Method::Address_Space::PHYSICAL);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
-		Address_Space * address_space = reinterpret_cast<Address_Space *> message->return_value();
+		Address_Space * address_space = reinterpret_cast<Address_Space *>(message->return_value());
 		return address_space;
     };
 
