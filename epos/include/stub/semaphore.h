@@ -5,7 +5,7 @@
 #include <stub/message.h>
 #include <stub/skeleton.h>
 
-__BEGIN_API
+__BEGIN_APP
 
 class Semaphore {
 
@@ -46,5 +46,5 @@ private:
 	Message * message;
 };
 
-__END_API
+__END_APP
 #endif

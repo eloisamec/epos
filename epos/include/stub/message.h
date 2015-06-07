@@ -8,10 +8,6 @@ __BEGIN_API
 class Message {
 
 public:
-
-	//Message(){};
-	//~Message();
-	
 	void class_id(int id);
 	int class_id();
 
@@ -42,6 +38,12 @@ public:
 	void param7(void * ptr);
 	void * param7();
 
+	void variadic1(void ...);
+	void * variadic1();
+	
+	void variadic2(void ...);
+	void * variadic2();
+	
 	void return_value(void * ptr);
 	void * return_value();
 
@@ -57,6 +59,9 @@ private:
 	void * _param5;
 	void * _param6;
 	void * _param7;
+	void * _variadic1[];
+	void * _variadic2[];
+	
 };
 
 __END_API

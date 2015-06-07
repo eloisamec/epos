@@ -1,23 +1,26 @@
 #ifndef __app_types_h
 #define __app_types_h
 
+#include <system/config.h>
+#include <tsc.h>
+#include <rtc.h>
+
 __BEGIN_API
 
+	typedef RTC::Microsecond Microsecond;
+	typedef TSC::Hertz Hertz;
+	
 namespace Class {
 	enum { ADDRESS_SPACE, 
 		   ALARM, 
 		   CONDITION, 
-		   CONDITION_HANDLER,
 		   DISPLAY,
 		   HANDLER,
 		   MUTEX, 
-		   MUTEX_HANDLER,
 		   SEGMENT,
 		   SEMAPHORE,
-		   SEMAPHORE_HANDLER,
 		   TASK,
-		   THREAD,
-		   THREAD_HANDLER };
+		   THREAD };
 }
 
 namespace Method {
@@ -34,36 +37,24 @@ namespace Method {
 		enum { CONSTRUCTOR, DESTRUCTOR, WAIT, SIGNAL, BROADCAST };
 	}
 	
-	namespace Condition_Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR  };
-	}
-	
 	namespace Display {
-		enum { CONSTRUCTOR, DESTRUCTOR  };
+		enum { CONSTRUCTOR, CLEAR, PUTC, PUTS, GEOMETRY, POSITION_1, POSITION_2 };
 	}
 	
 	namespace Handler {
-		enum { };
+		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR };
 	}
 	
 	namespace Mutex {
 		enum { CONSTRUCTOR, DESTRUCTOR, LOCK, UNLOCK };
 	}
 	
-	namespace Mutex_Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR }; 
-	}
-		
 	namespace Segment {
-		enum { CONSTRUCTOR, DESTRUCTOR };
+		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, DESTRUCTOR, SIZE, PHY_ADDRESS, RESIZE };
 	}
 	
 	namespace Semaphore {
 		enum { CONSTRUCTOR, DESTRUCTOR, P, V };
-	}
-	
-	namespace Semaphore_Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR, OPERATOR };
 	}
 	
 	namespace Task {
@@ -71,14 +62,10 @@ namespace Method {
 	}
 
 	namespace Thread {
-		enum { CONSTRUCTOR, DESTRUCTOR };
-	}
-	
-	namespace Thread_Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR };
+		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, CONSTRUCTOR_3, CONSTRUCTOR_4, DESTRUCTOR, STATE, PRIORITY_1, PRIORITY_2, TASK, JOIN, PASS, SUSPEND, RESUME, SELF, YIELD, EXIT };
 	}
 }
-
+	
 __END_API
 
 #endif

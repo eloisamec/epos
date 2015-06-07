@@ -5,7 +5,7 @@
 #include <stub/message.h>
 #include <stub/skeleton.h>
 
-__BEGIN_API
+__BEGIN_APP
 
 class Condition {
 
@@ -13,14 +13,14 @@ public:
 
     Condition() {
 		message = new Message();
-    	message->class_id(Class::Condition);
+    	message->class_id(Class::CONDITION);
     	message->method_id(Method::Condition::CONSTRUCTOR);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
     };
 	
     ~Condition(){
-    	message->class_id(Class::Condition);
+    	message->class_id(Class::CONDITION);
     	message->method_id(Method::Condition::DESTRUCTOR);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -28,21 +28,21 @@ public:
     };
 
     void wait() {
-    	message->class_id(Class::Condition);
+    	message->class_id(Class::CONDITION);
     	message->method_id(Method::Condition::WAIT);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
     };
 
     void signal(){
-    	message->class_id(Class::Condition);
+    	message->class_id(Class::CONDITION);
     	message->method_id(Method::Condition::SIGNAL);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
     };
 	
 	void broadcast(){
-    	message->class_id(Class::Condition);
+    	message->class_id(Class::CONDITION);
     	message->method_id(Method::Condition::BROADCAST);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -53,5 +53,5 @@ private:
    Message * message;
 };
 
-__END_API
+__END_APP
 #endif

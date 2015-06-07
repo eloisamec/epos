@@ -11,7 +11,7 @@
 #define ARCH ia32
 #define MACH pc
 #define MMOD legacy
-#define APPL fork
+#define APPL test
 #define __mode_builtin__
 #define __arch_ia32__
 #define __mach_pc__
@@ -30,10 +30,16 @@ namespace EPOS {
         using namespace U;
     }
 }
+namespace APP {}
 
 #define __BEGIN_API             namespace EPOS {
 #define __END_API               }
 #define _API                    ::EPOS
+
+#define __BEGIN_APP     		namespace EPOS { namespace APP {
+#define __END_APP       		} }
+#define __USING_APP     		using namespace EPOS::APP;
+#define _APP					::EPOS::APP
 
 #define __BEGIN_UTIL            namespace EPOS { namespace S { namespace U {
 #define __END_UTIL              }}}

@@ -5,7 +5,7 @@
 #include <stub/message.h>
 #include <stub/skeleton.h>
 
-__BEGIN_API
+__BEGIN_APP
 
 class Task {
 
@@ -13,7 +13,7 @@ public:
 
     Task(const Segment &cs, const Segment &ds) {
 		message = new Message();
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::CONSTRUCTOR);
     	message->param1((void*) cs);
     	message->param2((void*) ds);
@@ -22,7 +22,7 @@ public:
     };
 	
     ~Task(){
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::DESTRUCTOR);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -30,7 +30,7 @@ public:
     };
 
     Address_Space * address_space() {
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::ADDRESS_SPACE);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -39,7 +39,7 @@ public:
     };
 
     const Segment * code_segment(){
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::CODE_SEGMENT);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -48,7 +48,7 @@ public:
     };
 	
 	const Segment * data_segment(){
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::DATA_SEGMENT);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -57,7 +57,7 @@ public:
     };
 	
 	Log_Addr code(){
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::CODE);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -67,7 +67,7 @@ public:
 	
 	
 	Log_Addr data(){
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::DATA);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -79,7 +79,7 @@ public:
 		if (!message) {
 			Message * message = new Message();
 		}
-    	message->class_id(Class::Task);
+    	message->class_id(Class::TASK);
     	message->method_id(Method::Task::SELF);
     	message->object_id(_obj_id);
     	Skeleton::call(message);
@@ -93,5 +93,5 @@ private:
    Message * message;
 };
 
-__END_API
+__END_APP
 #endif
