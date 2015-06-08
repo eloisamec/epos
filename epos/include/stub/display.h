@@ -23,14 +23,14 @@ public:
     	message.class_id(Class::DISPLAY);
     	message.method_id(Method::Display::CLEAR);
     	Skeleton::call(&message);
-    };
+    }
 
 	static void putc() {
 		Message message = Message();
     	message.class_id(Class::DISPLAY);
     	message.method_id(Method::Display::PUTC);
     	Skeleton::call(&message);
-    };
+    }
 	
 	static void puts(const char * s) {
 		Message message = Message();
@@ -38,7 +38,7 @@ public:
     	message.method_id(Method::Display::PUTS);
     	message.param1((void*) s);
     	Skeleton::call(&message);
-    };
+	}
 	
 	static void geometry(int * lines, int * columns) {
 		Message message = Message();
@@ -47,7 +47,7 @@ public:
     	message.param1((void*) &lines);
 		message.param2((void*) &columns);
     	Skeleton::call(&message);
-    };
+    }
 	
 	static void position(int * line, int * column) {
 		Message message = Message();
@@ -56,7 +56,7 @@ public:
     	message.param1((void*) &line);
 		message.param2((void*) &column);
     	Skeleton::call(&message);
-    };
+    }
 	
 	static void position(int line, int column) {
 		Message message = Message();
@@ -65,7 +65,8 @@ public:
     	message.param1((void*) line);
 		message.param2((void*) column);
     	Skeleton::call(&message);
-    };
+    }
+
 private:
 	void * _obj_id;
 	Message * message;

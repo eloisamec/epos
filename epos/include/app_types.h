@@ -4,6 +4,7 @@
 #include <system/config.h>
 #include <tsc.h>
 #include <rtc.h>
+#include <thread.h>
 
 __BEGIN_API
 
@@ -14,7 +15,10 @@ __BEGIN_API
 	typedef MMU::Flags Flags;
     typedef CPU::Phy_Addr Phy_Addr;
     typedef void (Function)();
-	
+    typedef Thread::Configuration Configuration;
+    typedef Thread::Priority Priority;
+    typedef Thread::State State;
+
 namespace Class {
 	enum { ADDRESS_SPACE, 
 		   ALARM, 
@@ -31,43 +35,96 @@ namespace Class {
 namespace Method {
 
 	namespace Address_Space {
-		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, DESTRUCTOR, ATTACH_1, ATTACH_2, DETACH, PHYSICAL };
+		enum { CONSTRUCTOR_1,
+			   CONSTRUCTOR_2,
+			   DESTRUCTOR,
+			   ATTACH_1,
+			   ATTACH_2,
+			   DETACH,
+			   PHYSICAL };
 	}
 	
 	namespace Alarm {
-		enum { CONSTRUCTOR, DESTRUCTOR, FREQUENCY, DELAY };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR,
+			   FREQUENCY,
+			   DELAY };
 	}
 	
 	namespace Condition {
-		enum { CONSTRUCTOR, DESTRUCTOR, WAIT, SIGNAL, BROADCAST };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR,
+			   WAIT,
+			   SIGNAL,
+			   BROADCAST };
 	}
 	
 	namespace Display {
-		enum { CONSTRUCTOR, CLEAR, PUTC, PUTS, GEOMETRY, POSITION_1, POSITION_2 };
+		enum { CONSTRUCTOR,
+			   CLEAR,
+			   PUTC,
+			   PUTS,
+			   GEOMETRY,
+			   POSITION_1,
+			   POSITION_2 };
 	}
 	
 	namespace Handler {
-		enum { CONSTRUCTOR, DESTRUCTOR };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR };
 	}
 	
 	namespace Mutex {
-		enum { CONSTRUCTOR, DESTRUCTOR, LOCK, UNLOCK };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR,
+			   LOCK,
+			   UNLOCK };
 	}
 	
 	namespace Segment {
-		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, DESTRUCTOR, SIZE, PHY_ADDRESS, RESIZE };
+		enum { CONSTRUCTOR_1,
+			   CONSTRUCTOR_2,
+			   DESTRUCTOR,
+			   SIZE,
+			   PHY_ADDRESS,
+			   RESIZE };
 	}
 	
 	namespace Semaphore {
-		enum { CONSTRUCTOR, DESTRUCTOR, P, V };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR,
+			   P,
+			   V };
 	}
 	
 	namespace Task {
-		enum { CONSTRUCTOR, DESTRUCTOR, ADDRESS_SPACE, CODE_SEGMENT, CODE, DATA_SEGMENT, DATA, SELF };
+		enum { CONSTRUCTOR,
+			   DESTRUCTOR,
+			   ADDRESS_SPACE,
+			   CODE_SEGMENT,
+			   CODE,
+			   DATA_SEGMENT,
+			   DATA,
+			   SELF };
 	}
 
 	namespace Thread {
-		enum { CONSTRUCTOR_1, CONSTRUCTOR_2, CONSTRUCTOR_3, CONSTRUCTOR_4, DESTRUCTOR, STATE, PRIORITY_1, PRIORITY_2, TASK, JOIN, PASS, SUSPEND, RESUME, SELF, YIELD, EXIT };
+		enum { CONSTRUCTOR_1,
+			   CONSTRUCTOR_2,
+			   CONSTRUCTOR_3,
+			   CONSTRUCTOR_4,
+			   DESTRUCTOR,
+			   STATE,
+			   PRIORITY_1,
+			   PRIORITY_2,
+			   TASK,
+			   JOIN,
+			   PASS,
+			   SUSPEND,
+			   RESUME,
+			   SELF,
+			   YIELD,
+			   EXIT };
 	}
 }
 	

@@ -395,8 +395,9 @@ __BEGIN_SYS
 	
 	// Thread
 	void Skeleton::thread_constructor_1(Message * m) {
-		//Thread * thread = new (SYSTEM) Thread(m->variadic1(), m->variadic2());
-		//m-> return_value(reinterpret_cast<void *>(&thread));
+		Segment p1 = *reinterpret_cast<Segment*>(m->param1());
+		Thread * thread = new (SYSTEM) Thread(, m->variadic2());
+		m-> return_value(reinterpret_cast<void *>(&thread));
 	}
 	
 	void Skeleton::thread_constructor_2(Message * m) {
@@ -412,51 +413,68 @@ __BEGIN_SYS
 	}
 	
 	void Skeleton::thread_destructor(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		delete thread;
 	}
 	
 	void Skeleton::thread_state(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		State state = thread->state();
+		m->return_value(reinterpret_cast<void *>(&state));
 	}
 	
 	void Skeleton::thread_priority_1(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		Priority priority = thread->priority();
+		m->return_value(reinterpret_cast<void *>(&priority));
 	}
 	
 	void Skeleton::thread_priority_2(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		Priority p = *reinterpret_cast<Priority*>(m->param1());
+		thread->priority(p);
 	}
 	
 	void Skeleton::thread_task(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		Task * task = reinterpret_cast<Task *>(thread->task());
+		m->return_value(reinterpret_cast<void *>(task));
 	}
 	
 	void Skeleton::thread_join(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->join();
 	}
 	
 	void Skeleton::thread_pass(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->pass();
 	}
 	
 	void Skeleton::thread_suspend(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->suspend();
 	}
 	
 	void Skeleton::thread_resume(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->resume();
 	}
 	
 	void Skeleton::thread_self(Message * m) {
-	
+		Thread * thread = Thread::self();
+		m->return_value(reinterpret_cast<void *>(thread));
 	}
 	
 	void Skeleton::thread_yield(Message * m) {
-	
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->yield();
 	}
 	
 	void Skeleton::thread_exit(Message * m) {
-	
+		int status = *reinterpret_cast<int *>(m->param1());
+		Thread * thread = reinterpret_cast<Thread*>(m->object_id());
+		thread->exit(status);
 	}
 	
 

@@ -10,46 +10,50 @@ __BEGIN_APP
 class Thread {
 
 public:
+	template<typename ... Tn>
 	Thread(int (*entry)(Tn ...), Tn ... an) {
 		message = new Message();
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_1);
-		message->variadic1(void* (*entry)...);
-		message->variadic2(void* an...);
+		message->variadic1((void*) (*entry)...);
+		message->variadic2((void*) an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}
 	
+	template<typename ... Tn>
 	Thread(Task * task, int (*entry)(Tn ...), Tn ... an) {
 		message = new Message();
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_2);
-		message->param1(void* task);
-		message->variadic1(void* (*entry)...);
-		message->variadic2(void* an...);
+		message->param1((void*) task);
+		message->variadic1((void*) (*entry)...);
+		message->variadic2((void*) an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}
 	
+	template<typename ... Cn, typename ... Tn>
 	Thread(const Configuration & conf, int (*entry)(Tn ...), Tn ... an) {
 		message = new Message();
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_3);
-		message->param1(void* conf);
-		message->variadic1[](void* (*entry)...);
-		message->variadic2[](void* an...);
+		message->param1((void*) conf);
+		message->variadic1((void*) (*entry)...);
+		message->variadic2((void*) an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}
 	
+	template<typename ... Cn, typename ... Tn>
 	Thread(const Configuration & conf, Task * task, int (*entry)(Tn ...), Tn ... an) {
 		message = new Message();
     	message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::CONSTRUCTOR_4);
-		message->param1(void* conf);
-		message->param2(void* task);
-		message->variadic1[](void* (*entry)...);
-		message->variadic2[](void* an...);
+		message->param1((void*) conf);
+		message->param2((void*) task);
+		message->variadic1((void*) (*entry)...);
+		message->variadic2((void*) an...);
     	Skeleton::call(message);
     	_obj_id = message->return_value();
 	}
@@ -80,13 +84,12 @@ public:
 		return thread->_link.rank();
 	}
 	
-	void priority() {
+	void priority(const Priority & p) {
 		message->class_id(Class::THREAD);
     	message->method_id(Method::Thread::PRIORITY_2);
     	message->object_id(_obj_id);
+    	message->param1((void*) p);
     	Skeleton::call(message);
-		Priority p = reinterpret_cast<Priority *> message->return_value();
-		return const &p;
 	}
 	
 	Task * task() const {
@@ -146,10 +149,11 @@ public:
     	Skeleton::call(message);
 	}
 	
-	static void exit() {
+	static void exit(int status) {
 		Message message = Message();
 		message.class_id(Class::THREAD);
     	message.method_id(Method::Thread::EXIT);
+    	message.param1((void*) status);
     	message.object_id(_obj_id);
     	Skeleton::call(message);
 	}
