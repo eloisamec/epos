@@ -38,20 +38,6 @@ public:
 	void param7(void * ptr);
 	void * param7();
 
-	template<typename ... Tn>
-	void variadic1(Tn &... args) { 
-		variadics(&_params1[0], args...);
-	}
-	
-	void * variadic1() { return &_params1[20]; }
-	
-	template<typename ... Tn>
-	void variadic2(Tn &... args) {
-		variadics(&_params2[0], args...);
-	}
-
-	void * variadic2() { return &_params2[20]; }
-	
 	void return_value(void * ptr);
 	void * return_value();
 
@@ -67,16 +53,7 @@ private:
 	void * _param5;
 	void * _param6;
 	void * _param7;
-	char _params1[20];
-	char _params2[20];
 	
-	template< typename Head, typename ... Tail >
-    static void variadics( char * ptr, const Head & head, const Tail & ... tail ) {
-        *static_cast<Head *>(reinterpret_cast<void*>(ptr)) = head;
-        ptr += sizeof(Head);
-        variadics1( ptr, tail... );
-    }
-    static void variadics( char * ) {}
 };
 
 __END_API

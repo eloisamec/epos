@@ -77,6 +77,7 @@ private:
 	static void task_self(Message * m);
 	
 	// Thread
+	template<typename ... Tn>
 	static void thread_constructor_1(Message * m);
 	static void thread_constructor_2(Message * m);
 	static void thread_constructor_3(Message * m);

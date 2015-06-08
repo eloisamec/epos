@@ -394,10 +394,9 @@ __BEGIN_SYS
 	}
 	
 	// Thread
+	template<typename ... Tn>
 	void Skeleton::thread_constructor_1(Message * m) {
-		Segment p1 = *reinterpret_cast<Segment*>(m->param1());
-		Thread * thread = new (SYSTEM) Thread(, m->variadic2());
-		m-> return_value(reinterpret_cast<void *>(&thread));
+
 	}
 	
 	void Skeleton::thread_constructor_2(Message * m) {
