@@ -4,6 +4,7 @@
 #include <app_types.h>
 #include <stub/message.h>
 #include <stub/skeleton.h>
+#include <stub/handler.h>
 
 __BEGIN_APP
 

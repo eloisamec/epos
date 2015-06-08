@@ -77,11 +77,20 @@ private:
 	static void task_self(Message * m);
 	
 	// Thread
-	template<typename ... Tn>
+	template<typename T>
 	static void thread_constructor_1(Message * m);
+	template<typename T1, typename T2>
 	static void thread_constructor_2(Message * m);
+	template<typename T1, typename T2, typename T3>
 	static void thread_constructor_3(Message * m);
+	template<typename T1, typename T2, typename T3, typename T4>
 	static void thread_constructor_4(Message * m);
+	template<typename T1, typename T2, typename T3, typename T4, typename T5>
+	static void thread_constructor_5(Message * m);
+	template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+	static void thread_constructor_6(Message * m);
+	template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+	static void thread_constructor_7(Message * m);
 	static void thread_destructor(Message * m);
 	static void thread_state(Message * m);
 	static void thread_priority_1(Message * m);

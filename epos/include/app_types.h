@@ -4,7 +4,6 @@
 #include <system/config.h>
 #include <tsc.h>
 #include <rtc.h>
-#include <thread.h>
 
 __BEGIN_API
 
@@ -14,10 +13,7 @@ __BEGIN_API
     typedef CPU::Log_Addr Log_Addr;
 	typedef MMU::Flags Flags;
     typedef CPU::Phy_Addr Phy_Addr;
-    typedef void (Function)();
-    typedef Thread::Configuration Configuration;
-    typedef Thread::Priority Priority;
-    typedef Thread::State State;
+    typedef void (Function)();    
 
 namespace Class {
 	enum { ADDRESS_SPACE, 
@@ -113,6 +109,9 @@ namespace Method {
 			   CONSTRUCTOR_2,
 			   CONSTRUCTOR_3,
 			   CONSTRUCTOR_4,
+			   CONSTRUCTOR_5,
+			   CONSTRUCTOR_6,
+			   CONSTRUCTOR_7,
 			   DESTRUCTOR,
 			   STATE,
 			   PRIORITY_1,

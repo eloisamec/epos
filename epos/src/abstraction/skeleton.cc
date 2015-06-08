@@ -104,6 +104,9 @@ __BEGIN_SYS
 					case Method::Thread::CONSTRUCTOR_2: thread_constructor_2(m); break;
 					case Method::Thread::CONSTRUCTOR_3: thread_constructor_3(m); break;
 					case Method::Thread::CONSTRUCTOR_4: thread_constructor_4(m); break;
+					case Method::Thread::CONSTRUCTOR_5: thread_constructor_5(m); break;
+					case Method::Thread::CONSTRUCTOR_6: thread_constructor_6(m); break;
+					case Method::Thread::CONSTRUCTOR_7: thread_constructor_7(m); break;
 					case Method::Thread::DESTRUCTOR: thread_destructor(m); break;
 					case Method::Thread::STATE: thread_state(m); break;
 					case Method::Thread::PRIORITY_1: thread_priority_1(m); break;
@@ -394,22 +397,76 @@ __BEGIN_SYS
 	}
 	
 	// Thread
-	template<typename ... Tn>
+	template<typename T>
 	void Skeleton::thread_constructor_1(Message * m) {
-
+		T p1 = *reinterpret_cast<T*>(m->param1());
+		Thread * thread = new (SYSTEM) Thread(p1);
+		m-> return_value(reinterpret_cast<void *>(&thread));
 	}
 	
+	template<typename T1, typename T2>
 	void Skeleton::thread_constructor_2(Message * m) {
-	
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		Thread * thread = new (SYSTEM) Thread(p1, p2);
+		m-> return_value(reinterpret_cast<void *>(&thread));
 	}
 	
+	template<typename T1, typename T2, typename T3>
 	void Skeleton::thread_constructor_3(Message * m) {
-	
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		T3 p3 = *reinterpret_cast<T3*>(m->param3());
+		Thread * thread = new (SYSTEM) Thread(p1, p2, p3);
+		m-> return_value(reinterpret_cast<void *>(&thread));
 	}
 	
+	template<typename T1, typename T2, typename T3, typename T4>
 	void Skeleton::thread_constructor_4(Message * m) {
-	
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		T3 p3 = *reinterpret_cast<T3*>(m->param3());
+		T4 p4 = *reinterpret_cast<T4*>(m->param4());
+		Thread * thread = new (SYSTEM) Thread(p1, p2, p3, p4);
+		m-> return_value(reinterpret_cast<void *>(&thread));
 	}
+
+	template<typename T1, typename T2, typename T3, typename T4, typename T5>
+	void Skeleton::thread_constructor_5(Message * m) {
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		T3 p3 = *reinterpret_cast<T3*>(m->param3());
+		T4 p4 = *reinterpret_cast<T4*>(m->param4());
+		T5 p5 = *reinterpret_cast<T5*>(m->param5());
+		Thread * thread = new (SYSTEM) Thread(p1, p2, p3, p4, p5);
+		m-> return_value(reinterpret_cast<void *>(&thread));
+	}
+
+	template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+	void Skeleton::thread_constructor_6(Message * m) {
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		T3 p3 = *reinterpret_cast<T3*>(m->param3());
+		T4 p4 = *reinterpret_cast<T4*>(m->param4());
+		T5 p5 = *reinterpret_cast<T5*>(m->param5());
+		T6 p6 = *reinterpret_cast<T6*>(m->param6());
+		Thread * thread = new (SYSTEM) Thread(p1, p2, p3, p4, p5, p6);
+		m-> return_value(reinterpret_cast<void *>(&thread));
+	}
+
+	template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+	void Skeleton::thread_constructor_7(Message * m) {
+		T1 p1 = *reinterpret_cast<T1*>(m->param1());
+		T2 p2 = *reinterpret_cast<T2*>(m->param2());
+		T3 p3 = *reinterpret_cast<T3*>(m->param3());
+		T4 p4 = *reinterpret_cast<T4*>(m->param4());
+		T5 p5 = *reinterpret_cast<T5*>(m->param5());
+		T6 p6 = *reinterpret_cast<T6*>(m->param6());
+		T7 p7 = *reinterpret_cast<T7*>(m->param7());
+		Thread * thread = new (SYSTEM) Thread(p1, p2, p3, p4, p5, p6, p7);
+		m-> return_value(reinterpret_cast<void *>(&thread));
+	}
+
 	
 	void Skeleton::thread_destructor(Message * m) {
 		Thread * thread = reinterpret_cast<Thread*>(m->object_id());

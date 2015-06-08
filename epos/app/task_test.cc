@@ -1,25 +1,26 @@
 // EPOS Task Test Program
 
 #include <utility/ostream.h>
-#include <alarm.h>
-#include <thread.h>
-#include <task.h>
+#include <stub/thread.h>
+#include <stub/alarm.h>
+#include <stub/task.h>
+#include <stub/address_space.h>
 
-using namespace EPOS;
+using namespace EPOS::APP;
 
 const int iterations = 10;
 
 int func_a(void);
 int func_b(void);
 
-Thread * a;
-Thread * b;
-Thread * m;
-
 OStream cout;
 
 int main()
 {
+	Thread * a;
+	Thread * b;
+	Thread * m;
+
     cout << "Task test" << endl;
 
     m = Thread::self();
