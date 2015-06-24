@@ -1,0 +1,378 @@
+make --print-directory run1
+make[1]: Entrando no diretório `/home/douglas/epos_ine5424'
+(cd etc && make --print-directory)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/etc'
+sed -e 's/^#define MODE.*$/#define MODE kernel/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define ARCH.*$/#define ARCH ia32/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define MACH.*$/#define MACH pc/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define MMOD.*$/#define MMOD legacy/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define APPL.*$/#define APPL interrupt_test/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define __mode_.*__$/#define __mode_kernel__/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define __arch_.*__$/#define __arch_ia32__/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define __mach_.*__$/#define __mach_pc__/' -i /home/douglas/epos_ine5424/include/system/config.h
+sed -e 's/^#define __mmod_.*__$/#define __mmod_legacy__/' -i /home/douglas/epos_ine5424/include/system/config.h
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/etc'
+(cd tools && make --print-directory)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/tools'
+(cd eposcc && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/tools/eposcc'
+install -m 775 eposcc /home/douglas/epos_ine5424/bin
+sed -e 's/^EPOS=.*$/EPOS=\/home\/douglas\/epos_ine5424/' -i /home/douglas/epos_ine5424/bin/eposcc
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/tools/eposcc'
+(cd eposmkbi && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/tools/eposmkbi'
+install -m 775 eposmkbi /home/douglas/epos_ine5424/bin
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/tools/eposmkbi'
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/tools'
+(cd src && make --print-directory)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/src'
+(cd utility && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/utility'
+make[3]: Nada a ser feito para `all'.
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/utility'
+(cd architecture && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/architecture'
+(cd ia32 && make --print-directory)
+make[4]: Entrando no diretório `/home/douglas/epos_ine5424/src/architecture/ia32'
+install ia32_crt0.o ia32_crtbegin.o ia32_crtend.o /home/douglas/epos_ine5424/lib
+make[4]: Saindo do diretório `/home/douglas/epos_ine5424/src/architecture/ia32'
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/architecture'
+(cd machine && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/machine'
+(cd common && make --print-directory)
+make[4]: Entrando no diretório `/home/douglas/epos_ine5424/src/machine/common'
+make[4]: Nada a ser feito para `all'.
+make[4]: Saindo do diretório `/home/douglas/epos_ine5424/src/machine/common'
+(cd pc && make --print-directory)
+make[4]: Entrando no diretório `/home/douglas/epos_ine5424/src/machine/pc'
+make[4]: Nada a ser feito para `all'.
+make[4]: Saindo do diretório `/home/douglas/epos_ine5424/src/machine/pc'
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/machine'
+(cd abstraction && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/abstraction'
+make[3]: Nada a ser feito para `all'.
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/abstraction'
+(cd setup && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/setup'
+install pc_setup /home/douglas/epos_ine5424/img
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/setup'
+(cd boot && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/boot'
+dd if=pc_boot of=pc_boot.tmp ibs=32 skip=1 obs=512 >& /dev/null
+install pc_boot.tmp /home/douglas/epos_ine5424/img/pc_boot
+rm -f pc_boot.tmp
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/boot'
+(cd system && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/system'
+/usr/local/ia32/gcc-4.4.4/bin/ia32-ld  -nostdlib -L/home/douglas/epos_ine5424/lib -Bstatic -L`/usr/local/ia32/gcc-4.4.4/bin/ia32-gcc -ansi -c -Wa,--32 -print-file-name=` --nmagic \
+		--section-start .init=0xff700000 \
+		--section-start .ctors=0xff740000 \
+		--entry=_init -o pc_system \
+		/home/douglas/epos_ine5424/lib/ia32_crtbegin.o \
+		system_scaffold.o \
+		/home/douglas/epos_ine5424/lib/ia32_crtend.o \
+		--whole-archive \
+		-lsys_ia32 -lmach_ia32 -larch_ia32 \
+		--no-whole-archive \
+		-lutil_ia32 -lgcc
+/usr/local/ia32/gcc-4.4.4/bin/ia32-ld  -nostdlib -L/home/douglas/epos_ine5424/lib -Bstatic -i application_scaffold.o -i application_bindings.o -o pc_application.o
+install pc_system /home/douglas/epos_ine5424/img
+install pc_application.o /home/douglas/epos_ine5424/lib
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/system'
+(cd init && make --print-directory)
+make[3]: Entrando no diretório `/home/douglas/epos_ine5424/src/init'
+/usr/local/ia32/gcc-4.4.4/bin/ia32-ld  -nostdlib -L/home/douglas/epos_ine5424/lib -Bstatic -L`/usr/local/ia32/gcc-4.4.4/bin/ia32-gcc -ansi -c -Wa,--32 -print-file-name=` --omagic \
+		--section-start .init=0x00200000 \
+		--entry=_init -o pc_init \
+		/home/douglas/epos_ine5424/lib/ia32_crtbegin.o \
+		init_first.o init_system.o \
+		/home/douglas/epos_ine5424/lib/ia32_crtend.o \
+		-linit_ia32 \
+		-R /home/douglas/epos_ine5424/src/system/pc_system \
+		-lutil_ia32 -lgcc
+install init_application.o pc_init_application.o
+install pc_init /home/douglas/epos_ine5424/img
+install pc_init_application.o /home/douglas/epos_ine5424/lib
+make[3]: Saindo do diretório `/home/douglas/epos_ine5424/src/init'
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/src'
+(cd app && make --print-directory)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/app'
+/home/douglas/epos_ine5424/bin/eposcc --kernel  --gc-sections -o interrupt_test interrupt_test.o
+install interrupt_test /home/douglas/epos_ine5424/img
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/app'
+(cd img && make --print-directory)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/img'
+/home/douglas/epos_ine5424/bin/eposmkbi /home/douglas/epos_ine5424 interrupt_test.img interrupt_test
+
+EPOS bootable image tool
+
+  EPOS mode: kernel
+  Machine: pc
+  Model: legacy
+  Processor: ia32 (32 bits, little-endian)
+  Memory: 262144 KBytes
+  Boot Length: 128 - 512 (min - max) KBytes
+  Node id: will get from the network
+
+  Creating EPOS bootable image in "interrupt_test.img":
+    Adding boot strap "/home/douglas/epos_ine5424/img/pc_boot": done.
+    Adding setup "/home/douglas/epos_ine5424/img/pc_setup": done.
+    Adding init "/home/douglas/epos_ine5424/img/pc_init": done.
+    Adding system "/home/douglas/epos_ine5424/img/pc_system": done.
+    Adding application "interrupt_test": done.
+    Adding system info: done.
+
+  Adding specific boot features of "pc": done.
+
+  Image successfully generated (161848 bytes)!
+
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/img'
+(cd img && make --print-directory run)
+make[2]: Entrando no diretório `/home/douglas/epos_ine5424/img'
+qemu-system-i386 -smp 1 -m 262144k -nographic -no-reboot -fda interrupt_test.img | tee interrupt_test.out
+PC_Setup(bi=0x0010a000,sp=0x00109eec)
+System_Info={
+Boot_Map={n_cpus=1,mem_base=0x00000000,mem_top=0x10000000,io_base=0x00000000,io_
+top=0x00000000,node_id=-1,img_size=161336,setup_offset=0x200,init_offset=0x9124,
+system_offset=0xbd60,application_offset=0x25568,extras_offset=-1}
+Physical_Memory_Map={mem_base=0x01010101,mem_top=0x01010101,io_base=0x01010101,i
+o_top=0x01010101,ext_base=0x01010101,ext_top=0x01010101,idt=0x01010101,gdt=0x010
+10101,sys_pt=0x01010101,sys_pd=0x01010101,sys_info=0x01010101,phy_mem_pts=0x0101
+0101,io_pts=0x01010101,sys_code=0x01010101,sys_data=0x01010101,sys_stack=0x01010
+101,free1_base=0x01010101,free1_top=0x01010101,free2_base=0x01010101,free2_top=0
+x01010101,free3_base=0x01010101,free3_top=0x01010101}
+Load_Map={has_stp=1,has_ini=1,has_sys=1,has_app=1,has_ext=1,stp_entry=0x01010101
+,stp_segments=16843009,stp_code=0x01010101,stp_code_size=16843009,stp_data=0x010
+10101,stp_data_size=16843009,ini_entry=0x01010101,ini_segments=16843009,ini_code
+=0x01010101,ini_code_size=16843009,ini_data=0x01010101,ini_data_size=16843009,sy
+s_entry=0x01010101,sys_segments=16843009,sys_code=0x01010101,sys_code_size=16843
+009,sys_data=0x01010101,sys_data_size=16843009,sys_stack=0x01010101,sys_stack_si
+ze=16843009,app_entry=0x01010101,app_segments=16843009,app_code=0x01010101,app_c
+ode_size=16843009,app_data=0x01010101,app_stack=0x01010101,app_heap=0x01010101,a
+pp_data_size=16843009,app_extra=0x01010101,app_extra_size=16843009}
+Time_Map={cpu_clock=16843009,bus_clock=16843009}}
+PC_Setup::detect_memory()
+Memory={base=0x00000000,top=0x10000000}
+PC_Setup::calibrate_timers()
+PC_Setup::calibrate_timers:CPU clock=1597 MHz
+PC_Setup::calibrate_timers:BUS clock=125 MHz
+PC_Setup::detect_pci()
+PCI[0:0.0]={vnd_id=0x00008086,dev_id=0x00001237,cmd=0x00000103,stat=0x00000000}
+PCI[0:1.0]={vnd_id=0x00008086,dev_id=0x00007000,cmd=0x00000103,stat=0x00000200}
+PCI[0:1.1]={vnd_id=0x00008086,dev_id=0x00007010,cmd=0x00000103,stat=0x00000280}
+  reg[4]={io,phy=0x0000c040,size=0x00000010}
+PCI[0:1.3]={vnd_id=0x00008086,dev_id=0x00007113,cmd=0x00000103,stat=0x00000280}
+PCI[0:2.0]={vnd_id=0x00001013,dev_id=0x000000b8,cmd=0x00000103,stat=0x00000000}
+  reg[0]={mem,phy=0xfc000000,log=0xec011000,size=0x02000000}
+  reg[1]={mem,phy=0xfebf0000,log=0xeec01000,size=0x00001000}
+PCI[0:3.0]={vnd_id=0x00008086,dev_id=0x0000100e,cmd=0x00000103,stat=0x00000000}
+  reg[0]={mem,phy=0xfebc0000,log=0xeebd1000,size=0x00020000}
+  reg[1]={io,phy=0x0000c000,size=0x00000040}
+PCI address space={base=0xfc000000,top=0xfebf1000}
+Setting up this machine as follows: 
+  Processor:    IA32 at 1597 MHz (BUS clock = 125 MHz)
+  Memory:       262144 Kbytes [0x00000000:0x10000000]
+  User memory:  261692 Kbytes [0x00000000:0x0ff8f000]
+  PCI aperture: 45064 Kbytes [0xfc000000:0xfec02000]
+  Node Id:      will get from the network!
+  Setup:        36416 bytes
+  Init:         10832 bytes
+  OS code:      103648 bytes	data: 608 bytes	stack: 16384 bytes
+  APP code:     7776 bytes	data: 16797696 bytes
+setup_idt(idt=0x0ffff000)
+IDT[0  ]={sel=1,off=0x801004f0,p=1,dpl=3,d=0} (0x801004f0)
+IDT[255]={sel=1,off=0x801004f0,p=1,dpl=3,d=0} (0x801004f0)
+setup_gdt(gdt=0x0fffe000)
+GDT[NULL=0]={bas=0x00000000,lim=0x00000000,p=0,dpl=0,s=0,typ=0,g=0,d=0,a=0}
+GDT[SYCD=1]={bas=0x00000000,lim=0x000fffff,p=1,dpl=0,s=1,typ=11,g=1,d=1,a=0}
+GDT[SYDT=2]={bas=0x00000000,lim=0x000fffff,p=1,dpl=0,s=1,typ=3,g=1,d=1,a=0}
+GDT[APCD=3]={bas=0x00000000,lim=0x000fffff,p=1,dpl=3,s=1,typ=11,g=1,d=1,a=0}
+GDT[APDT=4]={bas=0x00000000,lim=0x000fffff,p=1,dpl=3,s=1,typ=3,g=1,d=1,a=0}
+GDT[TSS0=5]={bas=0xff405000,lim=0x00000fff,p=1,dpl=3,s=0,typ=9,g=0,d=0,a=0}
+setup_sys_pt(pmm={idt=0x0ffff000,gdt=0x0fffe000,pt=0x0fffd000,pd=0x0fffc000,info
+=0x0fffb000,tss0=0x0fffa000,mem=0x0ffba000,io=0x0ffae000,sysc=0x0ff94000,sysd=0x
+0ff93000,syss=0x0ff8f000,memb=0x00000000,memt=0x0ff8f000,fr1b=0x00002000,fr1t=0x
+000a0000,fr2b=0x00100000,fr2t=0x00400000},code_size=26,data_size=1,stack_size=4)
+
+SPT={
+[0]=0x0ffff023  [1]=0x0fffe023  [2]=0x0fffd023  [3]=0x0fffc023  
+[4]=0x0fffb023  [5]=0x0fffa023  [768]=0x0ff94023  [769]=0x0ff95023  
+[770]=0x0ff96023  [771]=0x0ff97023  [772]=0x0ff98023  [773]=0x0ff99023  
+[774]=0x0ff9a023  [775]=0x0ff9b023  [776]=0x0ff9c023  [777]=0x0ff9d023  
+[778]=0x0ff9e023  [779]=0x0ff9f023  [780]=0x0ffa0023  [781]=0x0ffa1023  
+[782]=0x0ffa2023  [783]=0x0ffa3023  [784]=0x0ffa4023  [785]=0x0ffa5023  
+[786]=0x0ffa6023  [787]=0x0ffa7023  [788]=0x0ffa8023  [789]=0x0ffa9023  
+[790]=0x0ffaa023  [791]=0x0ffab023  [792]=0x0ffac023  [793]=0x0ffad023  
+[832]=0x0ff93023  [960]=0x0ff8f023  [961]=0x0ff90023  [962]=0x0ff91023  
+[963]=0x0ff92023  
+}
+setup_sys_pd(pmm={idt=0x0ffff000,...},mem_base=0x00000000,mem_top=0x0ff8f000,io_
+base=0xfc000000,io_top=0xfec02000)
+SPD={
+[0]=0x0ffba027  [1]=0x0ffbb027  [2]=0x0ffbc027  [3]=0x0ffbd027  
+[4]=0x0ffbe027  [5]=0x0ffbf027  [6]=0x0ffc0027  [7]=0x0ffc1027  
+[8]=0x0ffc2027  [9]=0x0ffc3027  [10]=0x0ffc4027  [11]=0x0ffc5027  
+[12]=0x0ffc6027  [13]=0x0ffc7027  [14]=0x0ffc8027  [15]=0x0ffc9027  
+[16]=0x0ffca027  [17]=0x0ffcb027  [18]=0x0ffcc027  [19]=0x0ffcd027  
+[20]=0x0ffce027  [21]=0x0ffcf027  [22]=0x0ffd0027  [23]=0x0ffd1027  
+[24]=0x0ffd2027  [25]=0x0ffd3027  [26]=0x0ffd4027  [27]=0x0ffd5027  
+[28]=0x0ffd6027  [29]=0x0ffd7027  [30]=0x0ffd8027  [31]=0x0ffd9027  
+[32]=0x0ffda027  [33]=0x0ffdb027  [34]=0x0ffdc027  [35]=0x0ffdd027  
+[36]=0x0ffde027  [37]=0x0ffdf027  [38]=0x0ffe0027  [39]=0x0ffe1027  
+[40]=0x0ffe2027  [41]=0x0ffe3027  [42]=0x0ffe4027  [43]=0x0ffe5027  
+[44]=0x0ffe6027  [45]=0x0ffe7027  [46]=0x0ffe8027  [47]=0x0ffe9027  
+[48]=0x0ffea027  [49]=0x0ffeb027  [50]=0x0ffec027  [51]=0x0ffed027  
+[52]=0x0ffee027  [53]=0x0ffef027  [54]=0x0fff0027  [55]=0x0fff1027  
+[56]=0x0fff2027  [57]=0x0fff3027  [58]=0x0fff4027  [59]=0x0fff5027  
+[60]=0x0fff6027  [61]=0x0fff7027  [62]=0x0fff8027  [63]=0x0fff9027  
+[512]=0x0ffba023  [513]=0x0ffbb023  [514]=0x0ffbc023  [515]=0x0ffbd023  
+[516]=0x0ffbe023  [517]=0x0ffbf023  [518]=0x0ffc0023  [519]=0x0ffc1023  
+[520]=0x0ffc2023  [521]=0x0ffc3023  [522]=0x0ffc4023  [523]=0x0ffc5023  
+[524]=0x0ffc6023  [525]=0x0ffc7023  [526]=0x0ffc8023  [527]=0x0ffc9023  
+[528]=0x0ffca023  [529]=0x0ffcb023  [530]=0x0ffcc023  [531]=0x0ffcd023  
+[532]=0x0ffce023  [533]=0x0ffcf023  [534]=0x0ffd0023  [535]=0x0ffd1023  
+[536]=0x0ffd2023  [537]=0x0ffd3023  [538]=0x0ffd4023  [539]=0x0ffd5023  
+[540]=0x0ffd6023  [541]=0x0ffd7023  [542]=0x0ffd8023  [543]=0x0ffd9023  
+[544]=0x0ffda023  [545]=0x0ffdb023  [546]=0x0ffdc023  [547]=0x0ffdd023  
+[548]=0x0ffde023  [549]=0x0ffdf023  [550]=0x0ffe0023  [551]=0x0ffe1023  
+[552]=0x0ffe2023  [553]=0x0ffe3023  [554]=0x0ffe4023  [555]=0x0ffe5023  
+[556]=0x0ffe6023  [557]=0x0ffe7023  [558]=0x0ffe8023  [559]=0x0ffe9023  
+[560]=0x0ffea023  [561]=0x0ffeb023  [562]=0x0ffec023  [563]=0x0ffed023  
+[564]=0x0ffee023  [565]=0x0ffef023  [566]=0x0fff0023  [567]=0x0fff1023  
+[568]=0x0fff2023  [569]=0x0fff3023  [570]=0x0fff4023  [571]=0x0fff5023  
+[572]=0x0fff6023  [573]=0x0fff7023  [574]=0x0fff8023  [575]=0x0fff9023  
+[960]=0x0ffae833  [961]=0x0ffaf833  [962]=0x0ffb0833  [963]=0x0ffb1833  
+[964]=0x0ffb2833  [965]=0x0ffb3833  [966]=0x0ffb4833  [967]=0x0ffb5833  
+[968]=0x0ffb6833  [969]=0x0ffb7833  [970]=0x0ffb8833  [971]=0x0ffb9833  
+[1021]=0x0fffd023  
+}
+IP=0x00104bdc
+SP=0x00109eec
+CR0=0x00000011
+CR3=0x00000000
+setup_tss0(tss0=0xff405000)
+TR=40,TSS0={ss0=16,esp0=0xff7c4000}
+PC_Setup::load_init()
+PC_Setup::load_os()
+PC_Setup::load_app()
+IP=0x00104d43
+SP=0x00109eec
+CR0=0x80000011
+CR3=0x0fffc000
+Executing system's global constructors ...
+PC_Setup::call_next(ip=0x00200000,sp=0xff7c3ff8) => INIT
+System_Info={
+Boot_Map={n_cpus=1,mem_base=0x00000000,mem_top=0x10000000,io_base=0x00000000,io_
+top=0x00000000,node_id=-1,img_size=161336,setup_offset=0x200,init_offset=0x9124,
+system_offset=0xbd60,application_offset=0x25568,extras_offset=-1}
+Physical_Memory_Map={mem_base=0x00000000,mem_top=0x0ff8f000,io_base=0xfc000000,i
+o_top=0xfec02000,ext_base=0x00000000,ext_top=0x00000000,idt=0x0ffff000,gdt=0x0ff
+fe000,sys_pt=0x0fffd000,sys_pd=0x0fffc000,sys_info=0x0fffb000,phy_mem_pts=0x0ffb
+a000,io_pts=0x0ffae000,sys_code=0x0ff94000,sys_data=0x0ff93000,sys_stack=0x0ff8f
+000,free1_base=0x00002000,free1_top=0x000a0000,free2_base=0x00100000,free2_top=0
+x00400000,free3_base=0x01405000,free3_top=0x0ff8f000}
+Load_Map={has_stp=1,has_ini=1,has_sys=1,has_app=1,has_ext=0,stp_entry=0x00100000
+,stp_segments=1,stp_code=0x00100000,stp_code_size=36416,stp_data=0xffffffff,stp_
+data_size=0,ini_entry=0x00200000,ini_segments=1,ini_code=0x00200000,ini_code_siz
+e=10832,ini_data=0xffffffff,ini_data_size=0,sys_entry=0xff700000,sys_segments=2,
+sys_code=0xff700000,sys_code_size=103648,sys_data=0xff740000,sys_data_size=608,s
+ys_stack=0xff7c0000,sys_stack_size=16384,app_entry=0x00000040,app_segments=0,app
+_code=0x00000000,app_code_size=7776,app_data=0x00400000,app_stack=0x00401000,app
+_heap=0x00405000,app_data_size=16797696,app_extra=0x01010101,app_extra_size=1684
+3009}
+Time_Map={cpu_clock=1597043240,bus_clock=125035840}}
+SETUP ends here!
+Init_System()
+Initializing the CPU: 
+CPU::init()
+IA32_MMU::memory={base=0x00000000,size=262144KB}
+IA32_MMU::free1={base=0x00002000,size=632KB}
+IA32_MMU::free2={base=0x00100000,size=3072KB}
+IA32_MMU::free3={base=0x01405000,size=241192KB}
+IA32_MMU::free(frame=0x00002000,n=158)
+IA32_MMU::free(frame=0x00100000,n=768)
+IA32_MMU::free(frame=0x01405000,n=60298)
+IA32_MMU::master page directory=0x0fffc000
+done!
+Initializing system's heap: 
+IA32_MMU::alloc(frames=1) => 0x0009f000
+IA32_MMU::alloc(frames=68) => 0x0005b000
+Segment(bytes=278528,flags=0x00000007) [Chunk::_pt=0x0009f000] => 0xff7400e0
+Address_Space(pd=0x0fffc000) [Directory::pd=0x0fffc000] => 0xff7c3f94
+Address_Space::attach(seg=0xff7400e0,addr=0xff800000) => 0xff800000
+Heap(addr=0xff800000,bytes=278528) => 0xff7400f4
+~Address_Space(this=0xff7c3f94) [Directory::pd=0x0fffc000]
+done!
+Initializing the machine: 
+PC::init()
+IC::init()
+PCI::init(pmm.io_mem=0xfc000000)
+Timer::init()
+done!
+Initializing system abstractions: 
+Alarm::init()
+Task::init()
+	Address_Space(pd=0x0fffc000) [Directory::pd=0x0fffc000] => 0xff843fe0
+	IA32_MMU::alloc(frames=1) => 0x0005a000
+	Segment(bytes=7776,phy_addr=0x00000000,flags=0x00000007) [Chunk::_pt=0x0005a000] => 0xff843fc4
+	IA32_MMU::alloc(frames=5) => 0x00055000
+	Segment(bytes=16797696,phy_addr=0x00400000,flags=0x00000007) [Chunk::_pt=0x00055000] => 0xff843fa8
+	Task::master=0xff843f80 => {as=0xff843fe0,cs=0xff843fc4,ds=0xff843fa8,code=0x00000000,data=0x00400000}
+done!
+Randomizing the Random Numbers Generator's seed: 
+done!
+Init_First()
+INIT ends here!
+
+
+
+Thread::init(entry=0x00000040)
+IA32_MMU::alloc(frames=1) => 0x00054000
+IA32_MMU::alloc(frames=4) => 0x00050000
+Segment(bytes=16384,flags=0x00000007) [Chunk::_pt=0x00054000] => 0xff83ff10
+Address_Space::attach(seg=0xff83ff10) => 0x10000000
+
+Thread(task=0xff843f80,
+		entry=0x00000040,    == >>>> MAIN <<<< ==
+		state=0,priority=0,
+		stack={b=0xff83ff2c,s=16384},
+		context={b=0xff83bef4,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,
+				esp=0xff83bef4,
+				eip=0x00000040,
+				cs=1b,ccs=8,cds=10,ces=10,cfs=10,cgs=10,css=10,cr3=0x0fffc000}}) => 0xff843f34  == >>>>> MODO USUÁRIO <<<< ==
+
+IA32_MMU::alloc(frames=1) => 0x0004f000
+IA32_MMU::alloc(frames=4) => 0x0004b000
+Segment(bytes=16384,flags=0x00000007) [Chunk::_pt=0x0004f000] => 0xff83bea0
+Address_Space::attach(seg=0xff83bea0) => 0x10400000
+
+Thread(task=0xff843f80,entry=0xff710ef0,state=1,priority=2147483647,
+		stack={b=0xff83bebc,s=16384},
+		context={b=0xff837e84,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,
+				esp=0xff837e84,
+				eip=0xff710ef0,
+				cs=1b,ccs=8,cds=10,ces=10,cfs=10,cgs=10,css=10,cr3=0x0fffc000}}) => 0xff83fec4
+
+Dispatching the first thread: 0xff843f34
+
+
+Main em modo Usuário
+
+IA32_MMU::alloc(frames=1) => 0x0004a000
+IA32_MMU::alloc(frames=4) => 0x00046000
+Segment(bytes=16384,flags=0x00000007) [Chunk::_pt=0x0004a000] => 0xff837e20
+Address_Space::attach(seg=0xff837e20) => 0x10800000
+Thread(task=0xff843f80,entry=0x000006d0,state=1,priority=1,
+		stack={b=0xff837e3c,s=16384},
+		context={b=0xff833e04,{eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,
+				esp=0xff833e04,
+				eip=0x000006d0,
+				cs=1b,ccs=8,cds=0,ces=0,cfs=0,cgs=0,css=10,cr3=0x0fffc000}}) => 0xff83be44
+
+Thread::join(this=0x00000000,state=834331)
+Thread::suspend(this=0xff843f34)
+Thread::dispatch(prev=0xff843f34,next=0xff83be44)
+prev={0xff843f34,ctx={eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,esp=0xff83bef4,eip=0x00000040,cs=1b,ccs=8,cds=0,ces=0,cfs=0,cgs=0,css=10,cr3=0x0fffc000}}
+next={0xff83be44,ctx={eflags=0x200,eax=0,ebx=0,ecx=0,edx=0,esi=0,edi=0,ebp=0x00000000,esp=0xff833e04,eip=0x000006d0,cs=1b,ccs=8,cds=0,ces=0,cfs=0,cgs=0,css=10,cr3=0x0fffc000}}
+make[2]: Saindo do diretório `/home/douglas/epos_ine5424/img'
+make[1]: Saindo do diretório `/home/douglas/epos_ine5424'
